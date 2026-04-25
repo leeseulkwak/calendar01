@@ -197,6 +197,15 @@
     .summary-item.negative .s-value { color: #e74c3c; }
     .summary-item.net .s-value { color: #27ae60; font-size: 1.35rem; }
 
+    .btn-io {
+      padding: 10px 20px; border-radius: 10px; font-size: 0.95rem;
+      cursor: pointer; border: none; font-weight: 600; transition: all 0.15s;
+    }
+    .btn-io.export { background: #667eea; color: white; }
+    .btn-io.export:hover { background: #5a6fd6; }
+    .btn-io.import { background: #27ae60; color: white; }
+    .btn-io.import:hover { background: #219a52; }
+
     .btn-reset {
       padding: 6px 14px; border-radius: 8px; font-size: 0.82rem;
       cursor: pointer; border: 2px solid #fca5a5;
@@ -275,6 +284,17 @@
         <div class="s-value" id="sumNet">0원</div>
       </div>
     </div>
+  </div>
+
+  <!-- 데이터 내보내기/가져오기 -->
+  <div class="card">
+    <h2>💾 데이터 백업 / 복원</h2>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <button id="btnExport" class="btn-io export">📤 내보내기 (백업)</button>
+      <label class="btn-io import" for="fileImport">📥 가져오기 (복원)</label>
+      <input type="file" id="fileImport" accept=".json" style="display:none;" />
+    </div>
+    <p id="importMsg" style="font-size:0.82rem; color:#27ae60; margin-top:10px; display:none;"></p>
   </div>
 
 </div>
@@ -542,6 +562,50 @@
     }
     keysToDelete.forEach(k => localStorage.removeItem(k));
     renderCalendar();
+  });
+
+  // ── 내보내기 / 가져오기 ───────────────────────────────
+  document.getElementById('btnExport').addEventListener('click', () => {
+    const data = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.startsWith('daywage_')) {
+        data[key] = JSON.parse(localStorage.getItem(key));
+      }
+    }
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const today = new Date().toISOString().slice(0, 10);
+    a.href = url;
+    a.download = `일당기록_${today}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById('fileImport').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        Object.entries(data).forEach(([key, val]) => {
+          if (key.startsWith('daywage_')) {
+            localStorage.setItem(key, JSON.stringify(val));
+          }
+        });
+        const msg = document.getElementById('importMsg');
+        msg.textContent = `✅ ${Object.keys(data).length}개 데이터 복원 완료!`;
+        msg.style.display = 'block';
+        setTimeout(() => msg.style.display = 'none', 3000);
+        renderCalendar();
+      } catch {
+        alert('파일을 읽을 수 없어요. 올바른 JSON 파일인지 확인해 주세요.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
   });
 
   // ── 초기 렌더 ─────────────────────────────────────────

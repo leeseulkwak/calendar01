@@ -742,8 +742,31 @@
   document.querySelectorAll('input[name="wage"]').forEach(radio => {
     radio.addEventListener('change', () => {
       document.getElementById('customWageArea').classList.toggle('visible', radio.value === 'custom');
+      localStorage.setItem('selected_wage', radio.value);
+      if (radio.value === 'custom') {
+        const custom = document.getElementById('customWageInput').value;
+        if (custom) localStorage.setItem('custom_wage_value', custom);
+      }
     });
   });
+
+  document.getElementById('customWageInput').addEventListener('input', (e) => {
+    localStorage.setItem('custom_wage_value', e.target.value);
+  });
+
+  // 저장된 일당 복원
+  const savedWage = localStorage.getItem('selected_wage');
+  if (savedWage) {
+    const target = document.querySelector(`input[name="wage"][value="${savedWage}"]`);
+    if (target) {
+      target.checked = true;
+      if (savedWage === 'custom') {
+        document.getElementById('customWageArea').classList.add('visible');
+        const savedCustom = localStorage.getItem('custom_wage_value');
+        if (savedCustom) document.getElementById('customWageInput').value = savedCustom;
+      }
+    }
+  }
 
   document.getElementById('btnResetMonth').addEventListener('click', () => {
     if (!confirm(`${currentYear}년 ${currentMonth+1}월 데이터를 모두 삭제할까요?`)) return;

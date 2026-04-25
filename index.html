@@ -713,6 +713,9 @@
   document.getElementById('btnSave').addEventListener('click', () => {
     if (!selectedDate) return;
     if (!selectedEmoji) { alert('상태를 선택해 주세요!'); return; }
+    if (WORK_EMOJIS.has(selectedEmoji) && !document.querySelector('input[name="wage"]:checked')) {
+      alert('일당을 선택해 주세요!'); return;
+    }
     const meal      = parseInt(document.getElementById('modalMeal').value)      || 0;
     const transport = parseInt(document.getElementById('modalTransport').value) || 0;
     const wage = WORK_EMOJIS.has(selectedEmoji) ? getWage() : 0;

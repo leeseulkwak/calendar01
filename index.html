@@ -300,6 +300,41 @@
     }
     .btn-save:hover { background: var(--primary-dark); }
 
+    /* ── 연간 통계 ── */
+    .year-totals {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;
+    }
+    .year-total-item {
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .yt-days { background: #f0f4ff; }
+    .yt-net  { background: linear-gradient(135deg, var(--primary), #9b72f5); }
+    .yt-label { font-size: 0.72rem; font-weight: 500; margin-bottom: 4px; }
+    .yt-days .yt-label { color: var(--text-sub); }
+    .yt-net  .yt-label { color: rgba(255,255,255,0.8); }
+    .yt-value { font-size: 1.15rem; font-weight: 700; }
+    .yt-days .yt-value { color: var(--primary); }
+    .yt-net  .yt-value { color: white; }
+
+    .month-bars { display: flex; flex-direction: column; gap: 8px; }
+    .month-row {
+      display: grid; grid-template-columns: 36px 1fr 80px;
+      align-items: center; gap: 8px;
+    }
+    .month-row.current-month .month-label { color: var(--primary); font-weight: 700; }
+    .month-label { font-size: 0.8rem; color: var(--text-sub); font-weight: 500; text-align: right; }
+    .bar-track {
+      background: var(--bg); border-radius: 6px; height: 20px; overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%; border-radius: 6px;
+      background: linear-gradient(90deg, var(--primary), #9b72f5);
+      transition: width 0.5s ease; min-width: 0;
+    }
+    .bar-fill.empty { background: var(--border); }
+    .month-amount { font-size: 0.78rem; font-weight: 600; color: var(--text); text-align: right; white-space: nowrap; }
+    .month-amount.zero { color: var(--text-sub); font-weight: 400; }
+
     @media (max-width: 400px) {
       .day-cell { min-height: 58px; }
       .attend-emoji { font-size: 1rem; }
@@ -390,6 +425,22 @@
         <div style="font-size:2rem;">💰</div>
       </div>
     </div>
+  </div>
+
+  <!-- 연간 통계 -->
+  <div class="card">
+    <div class="card-title">📈 <span id="yearTitle"></span> 연간 통계</div>
+    <div class="year-totals">
+      <div class="year-total-item yt-days">
+        <div class="yt-label">총 출근일</div>
+        <div class="yt-value" id="yearDays">0일</div>
+      </div>
+      <div class="year-total-item yt-net">
+        <div class="yt-label">총 수령액</div>
+        <div class="yt-value" id="yearNet">0원</div>
+      </div>
+    </div>
+    <div class="month-bars" id="monthBars"></div>
   </div>
 
   <!-- 백업/복원 -->
@@ -558,6 +609,70 @@
     }
 
     updateSummary();
+    updateYearStats();
+  }
+
+  function getMonthNet(year, month) {
+    const days = new Date(year, month + 1, 0).getDate();
+    let income = 0, meal = 0, transport = 0;
+    for (let d = 1; d <= days; d++) {
+      const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const data = loadDay(dateStr);
+      if (!data) continue;
+      if (WORK_EMOJIS.has(data.emoji)) income += data.wage || 0;
+      meal      += data.meal      || 0;
+      transport += data.transport || 0;
+    }
+    return { income, meal, transport, net: income + meal + transport };
+  }
+
+  function updateYearStats() {
+    document.getElementById('yearTitle').textContent = `${currentYear}년`;
+    const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+    const monthData = MONTHS.map((_, i) => ({ ...getMonthNet(currentYear, i), label: MONTHS[i], idx: i }));
+
+    const maxNet = Math.max(...monthData.map(m => m.net), 1);
+    const yearDays = monthData.reduce((acc, m) => {
+      const days = new Date(currentYear, m.idx + 1, 0).getDate();
+      let cnt = 0;
+      for (let d = 1; d <= days; d++) {
+        const dateStr = `${currentYear}-${String(m.idx+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const data = loadDay(dateStr);
+        if (data && WORK_EMOJIS.has(data.emoji)) cnt++;
+      }
+      return acc + cnt;
+    }, 0);
+    const yearNet = monthData.reduce((acc, m) => acc + m.net, 0);
+
+    document.getElementById('yearDays').textContent = `${yearDays}일`;
+    document.getElementById('yearNet').textContent  = `${yearNet.toLocaleString()}원`;
+
+    const container = document.getElementById('monthBars');
+    container.innerHTML = '';
+    monthData.forEach(m => {
+      const row = document.createElement('div');
+      row.className = 'month-row' + (m.idx === currentMonth ? ' current-month' : '');
+
+      const label = document.createElement('div');
+      label.className = 'month-label';
+      label.textContent = m.label;
+
+      const track = document.createElement('div');
+      track.className = 'bar-track';
+      const fill = document.createElement('div');
+      fill.className = 'bar-fill' + (m.net === 0 ? ' empty' : '');
+      fill.style.width = m.net === 0 ? '4px' : `${(m.net / maxNet) * 100}%`;
+      track.appendChild(fill);
+
+      const amount = document.createElement('div');
+      amount.className = 'month-amount' + (m.net === 0 ? ' zero' : '');
+      amount.textContent = m.net === 0 ? '-' : `${(m.net / 10000).toFixed(0)}만원`;
+
+      row.appendChild(label);
+      row.appendChild(track);
+      row.appendChild(amount);
+      container.appendChild(row);
+    });
   }
 
   function updateSummary() {

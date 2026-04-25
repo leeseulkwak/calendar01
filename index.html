@@ -4,252 +4,340 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>일당 계산기</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
+    :root {
+      --primary: #5b6ef5;
+      --primary-light: #eef0ff;
+      --primary-dark: #4a5ce0;
+      --green: #22c55e;
+      --green-light: #f0fdf4;
+      --red: #ef4444;
+      --red-light: #fef2f2;
+      --yellow: #f59e0b;
+      --bg: #f4f6fb;
+      --card: #ffffff;
+      --text: #1e2130;
+      --text-sub: #6b7280;
+      --border: #e5e7eb;
+      --radius: 16px;
+      --shadow: 0 2px 16px rgba(0,0,0,0.07);
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f0f4f8;
-      color: #333;
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
     }
 
+    /* ── 헤더 ── */
     header {
-      background: linear-gradient(135deg, #667eea, #764ba2);
+      background: linear-gradient(135deg, var(--primary), #9b72f5);
       color: white;
-      padding: 20px 24px;
+      padding: 24px 20px 20px;
       text-align: center;
     }
-    header h1 { font-size: 1.6rem; margin-bottom: 4px; }
-    header p { font-size: 0.9rem; opacity: 0.85; }
+    header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; }
+    .header-sub {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      margin-top: 6px; font-size: 0.82rem; opacity: 0.85;
+    }
+    .today-badge {
+      background: rgba(255,255,255,0.2); border-radius: 20px;
+      padding: 2px 10px; font-size: 0.78rem;
+    }
 
-    .container { max-width: 900px; margin: 0 auto; padding: 20px 16px; }
+    /* ── 레이아웃 ── */
+    .container { max-width: 680px; margin: 0 auto; padding: 16px 14px 40px; }
 
-    /* 일당 설정 카드 */
     .card {
-      background: white;
-      border-radius: 16px;
-      padding: 20px 24px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 18px 16px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow);
     }
-    .card h2 { font-size: 1rem; color: #555; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .card-title {
+      font-size: 0.8rem; font-weight: 600; color: var(--text-sub);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+    }
 
-    .radio-group {
-      display: flex; flex-wrap: wrap; gap: 10px;
+    /* ── 일당 선택 ── */
+    .wage-scroll {
+      display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px;
+      scrollbar-width: none;
     }
-    .radio-group label {
-      display: flex; align-items: center; gap: 6px;
-      background: #f5f5f5; border: 2px solid #e0e0e0;
-      border-radius: 10px; padding: 8px 16px;
-      cursor: pointer; font-size: 0.95rem; transition: all 0.2s;
+    .wage-scroll::-webkit-scrollbar { display: none; }
+
+    .wage-btn {
+      flex-shrink: 0;
+      display: flex; align-items: center;
+      background: var(--bg); border: 2px solid var(--border);
+      border-radius: 50px; padding: 7px 16px;
+      cursor: pointer; font-size: 0.9rem; font-weight: 500;
+      color: var(--text); transition: all 0.18s;
+      white-space: nowrap; font-family: inherit;
     }
-    .radio-group input[type="radio"] { display: none; }
-    .radio-group input[type="radio"]:checked + span {
-      font-weight: bold;
-    }
-    .radio-group label:has(input:checked) {
-      background: #667eea; border-color: #667eea; color: white;
+    .wage-btn input[type="radio"] { display: none; }
+    .wage-btn:has(input:checked) {
+      background: var(--primary); border-color: var(--primary); color: white;
+      font-weight: 700;
     }
 
     .custom-wage {
-      display: flex; align-items: center; gap: 8px; margin-top: 12px;
+      display: none; align-items: center; gap: 8px; margin-top: 10px;
     }
+    .custom-wage.visible { display: flex; }
     .custom-wage input {
-      border: 2px solid #e0e0e0; border-radius: 10px;
-      padding: 8px 12px; font-size: 0.95rem; width: 160px;
-      outline: none; transition: border-color 0.2s;
+      flex: 1; border: 2px solid var(--border); border-radius: 10px;
+      padding: 8px 12px; font-size: 0.95rem; font-family: inherit;
+      outline: none; transition: border-color 0.2s; color: var(--text);
     }
-    .custom-wage input:focus { border-color: #667eea; }
-    .custom-wage span { color: #555; font-size: 0.9rem; }
+    .custom-wage input:focus { border-color: var(--primary); }
+    .custom-wage span { color: var(--text-sub); font-size: 0.9rem; white-space: nowrap; }
 
-    /* 비용 설정 */
-    .expense-row {
-      display: flex; gap: 16px; flex-wrap: wrap;
-    }
-    .expense-item {
-      flex: 1; min-width: 180px;
-    }
-    .expense-item label { font-size: 0.85rem; color: #777; display: block; margin-bottom: 6px; }
-    .expense-item input {
-      width: 100%; border: 2px solid #e0e0e0; border-radius: 10px;
-      padding: 8px 12px; font-size: 0.95rem; outline: none; transition: border-color 0.2s;
-    }
-    .expense-item input:focus { border-color: #667eea; }
-
-    /* 월 네비게이션 */
+    /* ── 월 네비게이션 ── */
     .month-nav {
       display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
-    .month-nav button {
-      background: #667eea; color: white; border: none;
-      border-radius: 8px; padding: 6px 14px; cursor: pointer;
-      font-size: 1rem; transition: background 0.2s;
+    .nav-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--primary-light); border: none;
+      color: var(--primary); font-size: 1rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s; font-weight: 700;
     }
-    .month-nav button:hover { background: #5a6fd6; }
-    .month-nav h2 { font-size: 1.2rem; color: #444; }
+    .nav-btn:hover { background: var(--primary); color: white; }
+    .month-title { font-size: 1.15rem; font-weight: 700; color: var(--text); }
 
-    /* 캘린더 */
+    /* ── 캘린더 ── */
     .calendar-grid {
-      display: grid; grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
+      display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
     }
     .day-header {
-      text-align: center; font-size: 0.8rem; font-weight: 600;
-      padding: 6px 0; color: #888;
+      text-align: center; font-size: 0.72rem; font-weight: 600;
+      padding: 4px 0 8px; color: var(--text-sub);
     }
-    .day-header:first-child { color: #e74c3c; }
-    .day-header:last-child { color: #3498db; }
+    .day-header:first-child { color: var(--red); }
+    .day-header:last-child { color: var(--primary); }
 
     .day-cell {
-      background: #fafafa; border: 2px solid #eee;
-      border-radius: 12px; padding: 8px 4px;
+      border-radius: 10px; padding: 6px 3px 5px;
       text-align: center; cursor: pointer;
-      transition: all 0.15s; min-height: 72px;
-      display: flex; flex-direction: column; align-items: center; gap: 4px;
-      position: relative;
+      transition: all 0.15s; min-height: 68px;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      border: 1.5px solid transparent; background: var(--bg);
     }
-    .day-cell:hover:not(.empty) { border-color: #667eea; background: #f0f0ff; }
-    .day-cell.empty { background: transparent; border-color: transparent; cursor: default; }
-    .day-cell.today { border-color: #667eea; background: #f0f0ff; }
-    .day-cell.sunday .day-num { color: #e74c3c; }
-    .day-cell.saturday .day-num { color: #3498db; }
+    .day-cell:active:not(.empty) { transform: scale(0.95); }
+    .day-cell:hover:not(.empty) { border-color: var(--primary); background: var(--primary-light); }
+    .day-cell.empty { background: transparent; cursor: default; }
 
-    .day-num { font-size: 0.85rem; font-weight: 600; color: #444; }
+    .day-cell.today {
+      border-color: var(--primary); background: var(--primary-light);
+    }
+    .day-cell.today .day-num {
+      background: var(--primary); color: white;
+      border-radius: 50%; width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .day-cell.worked { background: #f0f4ff; border-color: #c7d2fe; }
 
-    .attend-emoji { font-size: 1.4rem; line-height: 1; }
+    .day-num {
+      font-size: 0.82rem; font-weight: 600; color: var(--text);
+      min-width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .day-cell.sunday .day-num { color: var(--red); }
+    .day-cell.saturday .day-num { color: var(--primary); }
+    .day-cell.today.sunday .day-num,
+    .day-cell.today.saturday .day-num { color: white; }
 
-    .day-holiday {
-      font-size: 0.55rem; color: #e74c3c; line-height: 1.2; text-align: center;
+    .day-holiday { font-size: 0.5rem; color: var(--red); line-height: 1.2; text-align: center; max-width: 100%; overflow: hidden; }
+    .attend-emoji { font-size: 1.2rem; line-height: 1; }
+    .day-wage { font-size: 0.62rem; font-weight: 700; color: var(--primary); line-height: 1; }
+    .day-expense { font-size: 0.55rem; color: var(--text-sub); line-height: 1.3; }
+
+    /* ── 요약 ── */
+    .summary-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+    }
+    .summary-item {
+      border-radius: 12px; padding: 14px 12px; text-align: center;
+    }
+    .summary-item .s-icon { font-size: 1.3rem; margin-bottom: 4px; }
+    .summary-item .s-label { font-size: 0.72rem; color: var(--text-sub); margin-bottom: 4px; font-weight: 500; }
+    .summary-item .s-value { font-size: 1.1rem; font-weight: 700; }
+    .s-days   { background: #f0f4ff; } .s-days .s-value   { color: var(--primary); }
+    .s-income { background: #f0fdf4; } .s-income .s-value { color: var(--green); }
+    .s-meal   { background: #fff7ed; } .s-meal .s-value   { color: #ea580c; }
+    .s-trans  { background: #fdf4ff; } .s-trans .s-value  { color: #9333ea; }
+    .s-net {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, var(--primary), #9b72f5);
+      color: white; border-radius: 14px; padding: 18px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .s-net .s-label { color: rgba(255,255,255,0.8); font-size: 0.82rem; font-weight: 500; }
+    .s-net .s-value { color: white; font-size: 1.5rem; font-weight: 700; }
+
+    /* 요약 헤더 */
+    .summary-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px; flex-wrap: wrap; gap: 8px;
+    }
+    .reset-btns { display: flex; gap: 6px; }
+    .btn-reset {
+      padding: 5px 12px; border-radius: 8px; font-size: 0.75rem;
+      cursor: pointer; border: 1.5px solid var(--border);
+      background: white; color: var(--text-sub);
+      transition: all 0.15s; font-family: inherit; font-weight: 500;
+    }
+    .btn-reset:hover { border-color: var(--red); color: var(--red); }
+    .btn-reset.danger { border-color: #fca5a5; color: var(--red); background: var(--red-light); }
+    .btn-reset.danger:hover { background: #fee2e2; }
+
+    /* ── 백업/복원 ── */
+    .io-row { display: flex; gap: 10px; }
+    .btn-io {
+      flex: 1; padding: 11px; border-radius: 10px; font-size: 0.9rem;
+      cursor: pointer; border: none; font-weight: 600;
+      transition: all 0.15s; font-family: inherit; text-align: center;
+    }
+    .btn-io.export { background: var(--primary-light); color: var(--primary); }
+    .btn-io.export:hover { background: var(--primary); color: white; }
+    .btn-io.import { background: var(--green-light); color: var(--green); }
+    .btn-io.import:hover { background: var(--green); color: white; }
+    .import-msg {
+      font-size: 0.8rem; color: var(--green); margin-top: 8px;
+      display: none; font-weight: 500;
     }
 
-    .day-wage {
-      font-size: 0.68rem; font-weight: 700; color: #3355cc; line-height: 1.2;
-    }
-
-    .day-expense {
-      font-size: 0.6rem; color: #999; line-height: 1.3;
-    }
-
-    .day-cell.worked { background: #eef5ff; border-color: #a0bdf8; }
-    .day-cell.worked .day-num { color: #3355cc; }
-
-    /* 모달 */
+    /* ── 모달 (바텀시트) ── */
     .modal-overlay {
       display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.4); z-index: 100;
-      align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.45); z-index: 200;
+      align-items: flex-end; justify-content: center;
     }
     .modal-overlay.open { display: flex; }
     .modal {
-      background: white; border-radius: 20px; padding: 28px 24px;
-      width: 320px; max-width: 95vw; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      background: white;
+      border-radius: 24px 24px 0 0;
+      padding: 12px 20px 32px;
+      width: 100%; max-width: 680px;
+      box-shadow: 0 -4px 40px rgba(0,0,0,0.15);
+      animation: slideUp 0.25s ease;
     }
-    .modal h3 { font-size: 1.1rem; margin-bottom: 18px; color: #444; }
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .modal-handle {
+      width: 40px; height: 4px; background: var(--border);
+      border-radius: 2px; margin: 0 auto 16px;
+    }
+    .modal-title {
+      font-size: 1rem; font-weight: 700; color: var(--text);
+      margin-bottom: 16px; text-align: center;
+    }
 
-    .emoji-btn-row {
-      display: flex; gap: 10px; justify-content: center; margin-bottom: 18px; flex-wrap: wrap;
+    .emoji-grid {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+      margin-bottom: 18px;
     }
     .emoji-btn {
-      font-size: 2rem; background: #f5f5f5; border: 2px solid #e0e0e0;
-      border-radius: 12px; padding: 8px 12px; cursor: pointer; transition: all 0.15s;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      background: var(--bg); border: 2px solid var(--border);
+      border-radius: 12px; padding: 10px 6px; cursor: pointer;
+      transition: all 0.15s; font-family: inherit;
     }
-    .emoji-btn:hover { border-color: #667eea; background: #f0f0ff; }
-    .emoji-btn.selected { border-color: #667eea; background: #e8eeff; }
-
-    .modal-expense-row { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
-    .modal-expense-row label { font-size: 0.85rem; color: #777; }
-    .modal-expense-row input {
-      border: 2px solid #e0e0e0; border-radius: 10px;
-      padding: 8px 12px; font-size: 0.95rem; outline: none;
+    .emoji-btn .e-icon { font-size: 1.6rem; line-height: 1; }
+    .emoji-btn .e-label { font-size: 0.65rem; color: var(--text-sub); font-weight: 500; }
+    .emoji-btn:hover { border-color: var(--primary); background: var(--primary-light); }
+    .emoji-btn.selected {
+      border-color: var(--primary); background: var(--primary-light);
     }
-    .modal-expense-row input:focus { border-color: #667eea; }
+    .emoji-btn.selected .e-label { color: var(--primary); }
 
-    .modal-btns { display: flex; gap: 10px; }
+    .input-group { margin-bottom: 12px; }
+    .input-group label {
+      display: block; font-size: 0.8rem; font-weight: 600;
+      color: var(--text-sub); margin-bottom: 5px;
+    }
+    .input-group input {
+      width: 100%; border: 2px solid var(--border); border-radius: 10px;
+      padding: 10px 12px; font-size: 0.95rem; font-family: inherit;
+      outline: none; transition: border-color 0.2s; color: var(--text);
+    }
+    .input-group input:focus { border-color: var(--primary); }
+
+    .modal-btns { display: flex; gap: 8px; margin-top: 16px; }
     .btn-cancel {
-      flex: 1; padding: 10px; border: 2px solid #e0e0e0;
-      border-radius: 10px; background: white; cursor: pointer;
-      font-size: 0.95rem; color: #777; transition: all 0.15s;
+      flex: 1; padding: 12px; border: 2px solid var(--border);
+      border-radius: 12px; background: white; cursor: pointer;
+      font-size: 0.9rem; color: var(--text-sub); font-family: inherit;
+      font-weight: 500; transition: all 0.15s;
     }
     .btn-cancel:hover { border-color: #aaa; }
+    .btn-delete {
+      flex: 1; padding: 12px; border: 2px solid #fca5a5;
+      border-radius: 12px; background: var(--red-light); cursor: pointer;
+      font-size: 0.9rem; color: var(--red); font-family: inherit;
+      font-weight: 500; transition: all 0.15s;
+    }
+    .btn-delete:hover { background: #fee2e2; }
     .btn-save {
-      flex: 2; padding: 10px; border: none;
-      border-radius: 10px; background: #667eea; color: white;
-      cursor: pointer; font-size: 0.95rem; font-weight: 600; transition: all 0.15s;
+      flex: 2; padding: 12px; border: none;
+      border-radius: 12px; background: var(--primary); color: white;
+      cursor: pointer; font-size: 0.95rem; font-family: inherit;
+      font-weight: 700; transition: all 0.15s;
     }
-    .btn-save:hover { background: #5a6fd6; }
-    .btn-clear {
-      flex: 1; padding: 10px; border: 2px solid #fca5a5;
-      border-radius: 10px; background: white; cursor: pointer;
-      font-size: 0.95rem; color: #e74c3c; transition: all 0.15s;
-    }
-    .btn-clear:hover { background: #fff0f0; }
+    .btn-save:hover { background: var(--primary-dark); }
 
-    /* 요약 */
-    .summary-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 12px;
+    @media (max-width: 400px) {
+      .day-cell { min-height: 58px; }
+      .attend-emoji { font-size: 1rem; }
     }
-    .summary-item {
-      background: #f8f9ff; border-radius: 12px; padding: 14px 16px;
-      text-align: center; border: 2px solid #e8eaff;
-    }
-    .summary-item .s-label { font-size: 0.78rem; color: #888; margin-bottom: 6px; }
-    .summary-item .s-value { font-size: 1.2rem; font-weight: 700; color: #444; }
-    .summary-item.highlight .s-value { color: #667eea; }
-    .summary-item.negative .s-value { color: #e74c3c; }
-    .summary-item.net .s-value { color: #27ae60; font-size: 1.35rem; }
-
-    .btn-io {
-      padding: 10px 20px; border-radius: 10px; font-size: 0.95rem;
-      cursor: pointer; border: none; font-weight: 600; transition: all 0.15s;
-    }
-    .btn-io.export { background: #667eea; color: white; }
-    .btn-io.export:hover { background: #5a6fd6; }
-    .btn-io.import { background: #27ae60; color: white; }
-    .btn-io.import:hover { background: #219a52; }
-
-    .btn-reset {
-      padding: 6px 14px; border-radius: 8px; font-size: 0.82rem;
-      cursor: pointer; border: 2px solid #fca5a5;
-      background: white; color: #e74c3c; transition: all 0.15s;
-    }
-    .btn-reset:hover { background: #fff0f0; }
-    .btn-reset.danger { border-color: #ef4444; background: #fef2f2; }
-    .btn-reset.danger:hover { background: #fee2e2; }
   </style>
 </head>
 <body>
 
 <header>
   <h1>💰 일당 계산기</h1>
-  <p>출근 기록과 수입/지출을 한눈에 관리하세요</p>
+  <div class="header-sub">
+    <span id="headerToday" class="today-badge"></span>
+  </div>
 </header>
 
 <div class="container">
 
   <!-- 일당 설정 -->
   <div class="card">
-    <h2>💼 일당 설정</h2>
-    <div class="radio-group" id="wageRadios">
-      <label><input type="radio" name="wage" value="100000"><span>10만원</span></label>
-      <label><input type="radio" name="wage" value="110000"><span>11만원</span></label>
-      <label><input type="radio" name="wage" value="120000"><span>12만원</span></label>
-      <label><input type="radio" name="wage" value="130000"><span>13만원</span></label>
-      <label><input type="radio" name="wage" value="140000"><span>14만원</span></label>
-      <label><input type="radio" name="wage" value="150000"><span>15만원</span></label>
-      <label><input type="radio" name="wage" value="160000"><span>16만원</span></label>
-      <label><input type="radio" name="wage" value="170000"><span>17만원</span></label>
-      <label><input type="radio" name="wage" value="180000"><span>18만원</span></label>
-      <label><input type="radio" name="wage" value="190000"><span>19만원</span></label>
-      <label><input type="radio" name="wage" value="200000"><span>20만원</span></label>
-      <label><input type="radio" name="wage" value="210000"><span>21만원</span></label>
-      <label><input type="radio" name="wage" value="220000"><span>22만원</span></label>
-      <label><input type="radio" name="wage" value="230000"><span>23만원</span></label>
-      <label><input type="radio" name="wage" value="custom" id="radioCustom"><span>직접 입력</span></label>
+    <div class="card-title">💼 일당 설정</div>
+    <div class="wage-scroll" id="wageScroll">
+      <label class="wage-btn"><input type="radio" name="wage" value="100000"><span>10만원</span></label>
+      <label class="wage-btn"><input type="radio" name="wage" value="110000"><span>11만원</span></label>
+      <label class="wage-btn"><input type="radio" name="wage" value="120000"><span>12만원</span></label>
+      <label class="wage-btn"><input type="radio" name="wage" value="130000"><span>13만원</span></label>
+      <label class="wage-btn"><input type="radio" name="wage" value="140000"><span>14만원</span></label>
+      <label class="wage-btn"><input type="radio" name="wage" value="150000"><span>15만원</span></label>
+      <label class="wage-btn"><input type="radio" name="wage" value="160000"><span>16만원</span></label>
+      <label class="wage-btn"><input type="radio" name="wage" value="170000"><span>17만원</span></label>
+      <label class="wage-btn"><input type="radio" name="wage" value="180000"><span>18만원</span></label>
+      <label class="wage-btn"><input type="radio" name="wage" value="190000"><span>19만원</span></label>
+      <label class="wage-btn"><input type="radio" name="wage" value="200000"><span>20만원</span></label>
+      <label class="wage-btn"><input type="radio" name="wage" value="210000"><span>21만원</span></label>
+      <label class="wage-btn"><input type="radio" name="wage" value="220000"><span>22만원</span></label>
+      <label class="wage-btn"><input type="radio" name="wage" value="230000"><span>23만원</span></label>
+      <label class="wage-btn"><input type="radio" name="wage" value="custom" id="radioCustom"><span>직접입력</span></label>
     </div>
-    <div class="custom-wage" id="customWageArea" style="display:none;">
+    <div class="custom-wage" id="customWageArea">
       <input type="number" id="customWageInput" placeholder="금액 입력" min="0" step="1000" />
       <span>원</span>
     </div>
@@ -258,123 +346,132 @@
   <!-- 캘린더 -->
   <div class="card">
     <div class="month-nav">
-      <button id="prevMonth">&#8592;</button>
-      <h2 id="monthTitle"></h2>
-      <button id="nextMonth">&#8594;</button>
+      <button class="nav-btn" id="prevMonth">&#8592;</button>
+      <span class="month-title" id="monthTitle"></span>
+      <button class="nav-btn" id="nextMonth">&#8594;</button>
     </div>
     <div class="calendar-grid" id="calendarGrid"></div>
   </div>
 
   <!-- 월별 요약 -->
   <div class="card">
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
-      <h2 style="margin:0;">📊 이번 달 요약</h2>
-      <div style="display:flex; gap:8px;">
-        <button id="btnResetMonth" class="btn-reset">🗑️ 이번 달 초기화</button>
-        <button id="btnResetAll"   class="btn-reset danger">⚠️ 전체 초기화</button>
+    <div class="summary-header">
+      <div class="card-title" style="margin:0;">📊 이번 달 요약</div>
+      <div class="reset-btns">
+        <button id="btnResetMonth" class="btn-reset">🗑️ 이번 달</button>
+        <button id="btnResetAll"   class="btn-reset danger">⚠️ 전체</button>
       </div>
     </div>
     <div class="summary-grid">
-      <div class="summary-item highlight">
+      <div class="summary-item s-days">
+        <div class="s-icon">📅</div>
         <div class="s-label">출근 일수</div>
         <div class="s-value" id="sumDays">0일</div>
       </div>
-      <div class="summary-item highlight">
-        <div class="s-label">총 수입</div>
+      <div class="summary-item s-income">
+        <div class="s-icon">💵</div>
+        <div class="s-label">일당 합계</div>
         <div class="s-value" id="sumIncome">0원</div>
       </div>
-      <div class="summary-item highlight">
-        <div class="s-label">밥값 청구 합계</div>
+      <div class="summary-item s-meal">
+        <div class="s-icon">🍚</div>
+        <div class="s-label">밥값 청구</div>
         <div class="s-value" id="sumMeal">0원</div>
       </div>
-      <div class="summary-item highlight">
-        <div class="s-label">차비 청구 합계</div>
+      <div class="summary-item s-trans">
+        <div class="s-icon">🚌</div>
+        <div class="s-label">차비 청구</div>
         <div class="s-value" id="sumTransport">0원</div>
       </div>
-      <div class="summary-item net">
-        <div class="s-label">총 수령액 (일당 + 밥값 + 차비)</div>
-        <div class="s-value" id="sumNet">0원</div>
+      <div class="summary-item s-net">
+        <div>
+          <div class="s-label">총 수령액</div>
+          <div class="s-value" id="sumNet">0원</div>
+        </div>
+        <div style="font-size:2rem;">💰</div>
       </div>
     </div>
   </div>
 
-  <!-- 데이터 내보내기/가져오기 -->
+  <!-- 백업/복원 -->
   <div class="card">
-    <h2>💾 데이터 백업 / 복원</h2>
-    <div style="display:flex; gap:10px; flex-wrap:wrap;">
-      <button id="btnExport" class="btn-io export">📤 내보내기 (백업)</button>
-      <label class="btn-io import" for="fileImport">📥 가져오기 (복원)</label>
+    <div class="card-title">💾 백업 / 복원</div>
+    <div class="io-row">
+      <button id="btnExport" class="btn-io export">📤 내보내기</button>
+      <label class="btn-io import" for="fileImport">📥 가져오기</label>
       <input type="file" id="fileImport" accept=".json" style="display:none;" />
     </div>
-    <p id="importMsg" style="font-size:0.82rem; color:#27ae60; margin-top:10px; display:none;"></p>
+    <p id="importMsg" class="import-msg"></p>
   </div>
 
 </div>
 
-<!-- 날짜 클릭 모달 -->
+<!-- 모달 (바텀시트) -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
-    <h3 id="modalTitle">날짜 기록</h3>
-    <div class="emoji-btn-row">
-      <button class="emoji-btn" data-emoji="✅" title="출근">✅</button>
-      <button class="emoji-btn" data-emoji="🏖️" title="휴일">🏖️</button>
-      <button class="emoji-btn" data-emoji="🤒" title="병결">🤒</button>
-      <button class="emoji-btn" data-emoji="⭐" title="특근">⭐</button>
-      <button class="emoji-btn" data-emoji="❌" title="결근">❌</button>
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modalTitle">날짜 기록</div>
+
+    <div class="emoji-grid">
+      <button class="emoji-btn" data-emoji="✅"><span class="e-icon">✅</span><span class="e-label">출근</span></button>
+      <button class="emoji-btn" data-emoji="⭐"><span class="e-icon">⭐</span><span class="e-label">특근</span></button>
+      <button class="emoji-btn" data-emoji="🏖️"><span class="e-icon">🏖️</span><span class="e-label">휴일</span></button>
+      <button class="emoji-btn" data-emoji="🤒"><span class="e-icon">🤒</span><span class="e-label">병결</span></button>
+      <button class="emoji-btn" data-emoji="❌"><span class="e-icon">❌</span><span class="e-label">결근</span></button>
     </div>
-    <div class="modal-expense-row">
+
+    <div class="input-group">
       <label>🍚 밥값 청구 (원)</label>
       <input type="number" id="modalMeal" placeholder="오늘 밥값 청구액" min="0" step="500" />
+    </div>
+    <div class="input-group">
       <label>🚌 차비 청구 (원)</label>
       <input type="number" id="modalTransport" placeholder="오늘 차비 청구액" min="0" step="500" />
     </div>
+
     <div class="modal-btns">
       <button class="btn-cancel" id="btnCancel">취소</button>
-      <button class="btn-clear" id="btnClear">삭제</button>
-      <button class="btn-save" id="btnSave">저장</button>
+      <button class="btn-delete" id="btnClear">삭제</button>
+      <button class="btn-save"   id="btnSave">저장</button>
     </div>
   </div>
 </div>
 
 <script>
-  // ── 상태 ──────────────────────────────────────────────
   let currentYear  = new Date().getFullYear();
-  let currentMonth = new Date().getMonth(); // 0-based
-  let selectedDate = null; // "YYYY-MM-DD"
+  let currentMonth = new Date().getMonth();
+  let selectedDate = null;
   let selectedEmoji = null;
 
-  const WORK_EMOJIS = new Set(['✅', '⭐']); // 수입이 생기는 이모지
+  const WORK_EMOJIS = new Set(['✅', '⭐']);
+
+  // 헤더 오늘 날짜
+  const todayStr = new Date().toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'short' });
+  document.getElementById('headerToday').textContent = todayStr;
 
   function getWage() {
     const checked = document.querySelector('input[name="wage"]:checked');
     if (!checked) return 0;
-    if (checked.value === 'custom') {
-      return parseInt(document.getElementById('customWageInput').value) || 0;
-    }
+    if (checked.value === 'custom') return parseInt(document.getElementById('customWageInput').value) || 0;
     return parseInt(checked.value);
   }
 
-  // ── 공휴일 ────────────────────────────────────────────
   const HOLIDAYS = {
-    // 2024
     '2024-01-01':'신정','2024-02-09':'설 연휴','2024-02-10':'설날','2024-02-11':'설 연휴',
     '2024-02-12':'대체공휴일','2024-03-01':'삼일절','2024-05-05':'어린이날',
     '2024-05-15':'부처님오신날','2024-06-06':'현충일','2024-08-15':'광복절',
     '2024-09-16':'추석 연휴','2024-09-17':'추석','2024-09-18':'추석 연휴',
     '2024-10-03':'개천절','2024-10-09':'한글날','2024-12-25':'성탄절',
-    // 2025
     '2025-01-01':'신정','2025-01-28':'설 연휴','2025-01-29':'설날','2025-01-30':'설 연휴',
     '2025-03-01':'삼일절','2025-05-05':'어린이날','2025-05-06':'대체공휴일',
     '2025-06-06':'현충일','2025-08-15':'광복절',
-    '2025-10-05':'추석 연휴','2025-10-06':'추석','2025-10-07':'추석 연휴',
-    '2025-10-03':'개천절','2025-10-09':'한글날','2025-12-25':'성탄절',
-    // 2026
+    '2025-10-03':'개천절','2025-10-05':'추석 연휴','2025-10-06':'추석','2025-10-07':'추석 연휴',
+    '2025-10-09':'한글날','2025-12-25':'성탄절',
     '2026-01-01':'신정','2026-02-16':'설 연휴','2026-02-17':'설날','2026-02-18':'설 연휴',
     '2026-03-01':'삼일절','2026-05-05':'어린이날','2026-05-24':'부처님오신날',
     '2026-06-06':'현충일','2026-08-15':'광복절',
     '2026-09-24':'추석 연휴','2026-09-25':'추석','2026-09-26':'추석 연휴',
     '2026-10-03':'개천절','2026-10-09':'한글날','2026-12-25':'성탄절',
-    // 2027
     '2027-01-01':'신정','2027-02-06':'설 연휴','2027-02-07':'설날','2027-02-08':'설 연휴',
     '2027-03-01':'삼일절','2027-05-05':'어린이날','2027-05-13':'부처님오신날',
     '2027-06-06':'현충일','2027-08-15':'광복절',
@@ -382,36 +479,21 @@
     '2027-10-03':'개천절','2027-10-09':'한글날','2027-12-25':'성탄절',
   };
 
-  // ── localStorage 헬퍼 ────────────────────────────────
-  function storageKey(dateStr) { return 'daywage_' + dateStr; }
+  function storageKey(d) { return 'daywage_' + d; }
+  function loadDay(d)  { const r = localStorage.getItem(storageKey(d)); return r ? JSON.parse(r) : null; }
+  function saveDay(d, v) { localStorage.setItem(storageKey(d), JSON.stringify(v)); }
+  function deleteDay(d)  { localStorage.removeItem(storageKey(d)); }
 
-  function loadDay(dateStr) {
-    const raw = localStorage.getItem(storageKey(dateStr));
-    return raw ? JSON.parse(raw) : null;
-  }
-
-  function saveDay(dateStr, data) {
-    localStorage.setItem(storageKey(dateStr), JSON.stringify(data));
-  }
-
-  function deleteDay(dateStr) {
-    localStorage.removeItem(storageKey(dateStr));
-  }
-
-  // ── 캘린더 렌더링 ─────────────────────────────────────
   function renderCalendar() {
     const grid = document.getElementById('calendarGrid');
     grid.innerHTML = '';
+    document.getElementById('monthTitle').textContent = `${currentYear}년 ${currentMonth + 1}월`;
 
-    document.getElementById('monthTitle').textContent =
-      `${currentYear}년 ${currentMonth + 1}월`;
-
-    const headers = ['일','월','화','수','목','금','토'];
-    headers.forEach(h => {
-      const d = document.createElement('div');
-      d.className = 'day-header';
-      d.textContent = h;
-      grid.appendChild(d);
+    ['일','월','화','수','목','금','토'].forEach(h => {
+      const el = document.createElement('div');
+      el.className = 'day-header';
+      el.textContent = h;
+      grid.appendChild(el);
     });
 
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
@@ -419,24 +501,21 @@
     const today = new Date();
 
     for (let i = 0; i < firstDay; i++) {
-      const e = document.createElement('div');
-      e.className = 'day-cell empty';
-      grid.appendChild(e);
+      const e = document.createElement('div'); e.className = 'day-cell empty'; grid.appendChild(e);
     }
 
     for (let d = 1; d <= daysInMonth; d++) {
       const dateStr = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
       const dayData = loadDay(dateStr);
       const dow = new Date(currentYear, currentMonth, d).getDay();
-
       const isHoliday = !!HOLIDAYS[dateStr];
+      const isToday = today.getFullYear() === currentYear && today.getMonth() === currentMonth && today.getDate() === d;
 
       const cell = document.createElement('div');
       cell.className = 'day-cell';
       if (dow === 0 || isHoliday) cell.classList.add('sunday');
       if (dow === 6) cell.classList.add('saturday');
-      if (today.getFullYear() === currentYear && today.getMonth() === currentMonth && today.getDate() === d)
-        cell.classList.add('today');
+      if (isToday) cell.classList.add('today');
       if (dayData) cell.classList.add('worked');
 
       const numEl = document.createElement('div');
@@ -445,32 +524,34 @@
       cell.appendChild(numEl);
 
       if (isHoliday) {
-        const hlEl = document.createElement('div');
-        hlEl.className = 'day-holiday';
-        hlEl.textContent = HOLIDAYS[dateStr];
-        cell.appendChild(hlEl);
+        const hl = document.createElement('div');
+        hl.className = 'day-holiday';
+        hl.textContent = HOLIDAYS[dateStr];
+        cell.appendChild(hl);
       }
 
       if (dayData) {
-        const emojiEl = document.createElement('div');
-        emojiEl.className = 'attend-emoji';
-        emojiEl.textContent = dayData.emoji || '';
-        cell.appendChild(emojiEl);
+        const emoji = document.createElement('div');
+        emoji.className = 'attend-emoji';
+        emoji.textContent = dayData.emoji || '';
+        cell.appendChild(emoji);
 
         if (WORK_EMOJIS.has(dayData.emoji) && dayData.wage) {
-          const wageEl = document.createElement('div');
-          wageEl.className = 'day-wage';
-          wageEl.textContent = `💰${(dayData.wage / 10000).toLocaleString()}만`;
-          cell.appendChild(wageEl);
+          const w = document.createElement('div');
+          w.className = 'day-wage';
+          w.textContent = `${(dayData.wage / 10000).toLocaleString()}만`;
+          cell.appendChild(w);
         }
 
-        const expEl = document.createElement('div');
-        expEl.className = 'day-expense';
         const lines = [];
         if (dayData.meal)      lines.push(`🍚${dayData.meal.toLocaleString()}`);
         if (dayData.transport) lines.push(`🚌${dayData.transport.toLocaleString()}`);
-        expEl.textContent = lines.join(' ');
-        cell.appendChild(expEl);
+        if (lines.length) {
+          const exp = document.createElement('div');
+          exp.className = 'day-expense';
+          exp.textContent = lines.join(' ');
+          cell.appendChild(exp);
+        }
       }
 
       cell.addEventListener('click', () => openModal(dateStr, d));
@@ -480,43 +561,31 @@
     updateSummary();
   }
 
-  // ── 요약 업데이트 ─────────────────────────────────────
   function updateSummary() {
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
     let days = 0, income = 0, meal = 0, transport = 0;
-
     for (let d = 1; d <= daysInMonth; d++) {
       const dateStr = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
       const data = loadDay(dateStr);
       if (!data) continue;
-      if (WORK_EMOJIS.has(data.emoji)) {
-        days++;
-        income += data.wage || 0;
-      }
+      if (WORK_EMOJIS.has(data.emoji)) { days++; income += data.wage || 0; }
       meal      += data.meal      || 0;
       transport += data.transport || 0;
     }
-
     document.getElementById('sumDays').textContent      = `${days}일`;
     document.getElementById('sumIncome').textContent    = `${income.toLocaleString()}원`;
     document.getElementById('sumMeal').textContent      = `${meal.toLocaleString()}원`;
     document.getElementById('sumTransport').textContent = `${transport.toLocaleString()}원`;
-    const net = income + meal + transport;
-    document.getElementById('sumNet').textContent       = `${net.toLocaleString()}원`;
+    document.getElementById('sumNet').textContent       = `${(income + meal + transport).toLocaleString()}원`;
   }
 
-  // ── 모달 ──────────────────────────────────────────────
   function openModal(dateStr, day) {
-    selectedDate  = dateStr;
+    selectedDate = dateStr;
     selectedEmoji = null;
-
-    document.getElementById('modalTitle').textContent =
-      `${currentYear}년 ${currentMonth+1}월 ${day}일`;
-
+    document.getElementById('modalTitle').textContent = `${currentYear}년 ${currentMonth+1}월 ${day}일`;
     const existing = loadDay(dateStr);
     document.getElementById('modalMeal').value      = existing ? (existing.meal      || '') : '';
     document.getElementById('modalTransport').value = existing ? (existing.transport || '') : '';
-
     document.querySelectorAll('.emoji-btn').forEach(btn => {
       btn.classList.remove('selected');
       if (existing && btn.dataset.emoji === existing.emoji) {
@@ -524,14 +593,12 @@
         selectedEmoji = existing.emoji;
       }
     });
-
     document.getElementById('modalOverlay').classList.add('open');
   }
 
   function closeModal() {
     document.getElementById('modalOverlay').classList.remove('open');
-    selectedDate = null;
-    selectedEmoji = null;
+    selectedDate = null; selectedEmoji = null;
   }
 
   document.querySelectorAll('.emoji-btn').forEach(btn => {
@@ -546,118 +613,85 @@
 
   document.getElementById('btnSave').addEventListener('click', () => {
     if (!selectedDate) return;
-    if (!selectedEmoji) {
-      alert('이모지를 선택해 주세요!');
-      return;
-    }
+    if (!selectedEmoji) { alert('상태를 선택해 주세요!'); return; }
     const meal      = parseInt(document.getElementById('modalMeal').value)      || 0;
     const transport = parseInt(document.getElementById('modalTransport').value) || 0;
     const wage = WORK_EMOJIS.has(selectedEmoji) ? getWage() : 0;
-
     saveDay(selectedDate, { emoji: selectedEmoji, meal, transport, wage });
-    closeModal();
-    renderCalendar();
+    closeModal(); renderCalendar();
   });
 
   document.getElementById('btnClear').addEventListener('click', () => {
     if (!selectedDate) return;
-    deleteDay(selectedDate);
-    closeModal();
-    renderCalendar();
+    deleteDay(selectedDate); closeModal(); renderCalendar();
   });
 
   document.getElementById('modalOverlay').addEventListener('click', (e) => {
     if (e.target === document.getElementById('modalOverlay')) closeModal();
   });
 
-  // ── 월 이동 ───────────────────────────────────────────
   document.getElementById('prevMonth').addEventListener('click', () => {
-    currentMonth--;
-    if (currentMonth < 0) { currentMonth = 11; currentYear--; }
-    renderCalendar();
+    currentMonth--; if (currentMonth < 0) { currentMonth = 11; currentYear--; } renderCalendar();
   });
-
   document.getElementById('nextMonth').addEventListener('click', () => {
-    currentMonth++;
-    if (currentMonth > 11) { currentMonth = 0; currentYear++; }
-    renderCalendar();
+    currentMonth++; if (currentMonth > 11) { currentMonth = 0; currentYear++; } renderCalendar();
   });
 
-  // ── 일당 라디오 직접입력 토글 ─────────────────────────
   document.querySelectorAll('input[name="wage"]').forEach(radio => {
     radio.addEventListener('change', () => {
-      document.getElementById('customWageArea').style.display =
-        radio.value === 'custom' ? 'flex' : 'none';
+      document.getElementById('customWageArea').classList.toggle('visible', radio.value === 'custom');
     });
   });
 
-  // ── 초기화 ───────────────────────────────────────────
   document.getElementById('btnResetMonth').addEventListener('click', () => {
     if (!confirm(`${currentYear}년 ${currentMonth+1}월 데이터를 모두 삭제할까요?`)) return;
-    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-    for (let d = 1; d <= daysInMonth; d++) {
-      const dateStr = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      deleteDay(dateStr);
+    const days = new Date(currentYear, currentMonth + 1, 0).getDate();
+    for (let d = 1; d <= days; d++) {
+      deleteDay(`${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`);
     }
     renderCalendar();
   });
 
   document.getElementById('btnResetAll').addEventListener('click', () => {
     if (!confirm('전체 기록을 모두 삭제할까요?\n이 작업은 되돌릴 수 없습니다.')) return;
-    const keysToDelete = [];
+    const keys = [];
     for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key.startsWith('daywage_')) keysToDelete.push(key);
+      const k = localStorage.key(i); if (k.startsWith('daywage_')) keys.push(k);
     }
-    keysToDelete.forEach(k => localStorage.removeItem(k));
+    keys.forEach(k => localStorage.removeItem(k));
     renderCalendar();
   });
 
-  // ── 내보내기 / 가져오기 ───────────────────────────────
   document.getElementById('btnExport').addEventListener('click', () => {
     const data = {};
     for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key.startsWith('daywage_')) {
-        data[key] = JSON.parse(localStorage.getItem(key));
-      }
+      const k = localStorage.key(i);
+      if (k.startsWith('daywage_')) data[k] = JSON.parse(localStorage.getItem(k));
     }
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    const today = new Date().toISOString().slice(0, 10);
-    a.href = url;
-    a.download = `일당기록_${today}.json`;
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+    a.download = `일당기록_${new Date().toISOString().slice(0,10)}.json`;
     a.click();
-    URL.revokeObjectURL(url);
   });
 
   document.getElementById('fileImport').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const file = e.target.files[0]; if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
       try {
         const data = JSON.parse(ev.target.result);
-        Object.entries(data).forEach(([key, val]) => {
-          if (key.startsWith('daywage_')) {
-            localStorage.setItem(key, JSON.stringify(val));
-          }
-        });
+        Object.entries(data).forEach(([k, v]) => { if (k.startsWith('daywage_')) localStorage.setItem(k, JSON.stringify(v)); });
         const msg = document.getElementById('importMsg');
         msg.textContent = `✅ ${Object.keys(data).length}개 데이터 복원 완료!`;
         msg.style.display = 'block';
         setTimeout(() => msg.style.display = 'none', 3000);
         renderCalendar();
-      } catch {
-        alert('파일을 읽을 수 없어요. 올바른 JSON 파일인지 확인해 주세요.');
-      }
+      } catch { alert('파일을 읽을 수 없어요.'); }
     };
     reader.readAsText(file);
     e.target.value = '';
   });
 
-  // ── 초기 렌더 ─────────────────────────────────────────
   renderCalendar();
 </script>
 </body>

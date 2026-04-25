@@ -120,6 +120,10 @@
 
     .attend-emoji { font-size: 1.4rem; line-height: 1; }
 
+    .day-holiday {
+      font-size: 0.55rem; color: #e74c3c; line-height: 1.2; text-align: center;
+    }
+
     .day-wage {
       font-size: 0.68rem; font-weight: 700; color: #3355cc; line-height: 1.2;
     }
@@ -342,6 +346,34 @@
     return parseInt(checked.value);
   }
 
+  // ── 공휴일 ────────────────────────────────────────────
+  const HOLIDAYS = {
+    // 2024
+    '2024-01-01':'신정','2024-02-09':'설 연휴','2024-02-10':'설날','2024-02-11':'설 연휴',
+    '2024-02-12':'대체공휴일','2024-03-01':'삼일절','2024-05-05':'어린이날',
+    '2024-05-15':'부처님오신날','2024-06-06':'현충일','2024-08-15':'광복절',
+    '2024-09-16':'추석 연휴','2024-09-17':'추석','2024-09-18':'추석 연휴',
+    '2024-10-03':'개천절','2024-10-09':'한글날','2024-12-25':'성탄절',
+    // 2025
+    '2025-01-01':'신정','2025-01-28':'설 연휴','2025-01-29':'설날','2025-01-30':'설 연휴',
+    '2025-03-01':'삼일절','2025-05-05':'어린이날','2025-05-06':'대체공휴일',
+    '2025-06-06':'현충일','2025-08-15':'광복절',
+    '2025-10-05':'추석 연휴','2025-10-06':'추석','2025-10-07':'추석 연휴',
+    '2025-10-03':'개천절','2025-10-09':'한글날','2025-12-25':'성탄절',
+    // 2026
+    '2026-01-01':'신정','2026-02-16':'설 연휴','2026-02-17':'설날','2026-02-18':'설 연휴',
+    '2026-03-01':'삼일절','2026-05-05':'어린이날','2026-05-24':'부처님오신날',
+    '2026-06-06':'현충일','2026-08-15':'광복절',
+    '2026-09-24':'추석 연휴','2026-09-25':'추석','2026-09-26':'추석 연휴',
+    '2026-10-03':'개천절','2026-10-09':'한글날','2026-12-25':'성탄절',
+    // 2027
+    '2027-01-01':'신정','2027-02-06':'설 연휴','2027-02-07':'설날','2027-02-08':'설 연휴',
+    '2027-03-01':'삼일절','2027-05-05':'어린이날','2027-05-13':'부처님오신날',
+    '2027-06-06':'현충일','2027-08-15':'광복절',
+    '2027-09-14':'추석 연휴','2027-09-15':'추석','2027-09-16':'추석 연휴',
+    '2027-10-03':'개천절','2027-10-09':'한글날','2027-12-25':'성탄절',
+  };
+
   // ── localStorage 헬퍼 ────────────────────────────────
   function storageKey(dateStr) { return 'daywage_' + dateStr; }
 
@@ -389,9 +421,11 @@
       const dayData = loadDay(dateStr);
       const dow = new Date(currentYear, currentMonth, d).getDay();
 
+      const isHoliday = !!HOLIDAYS[dateStr];
+
       const cell = document.createElement('div');
       cell.className = 'day-cell';
-      if (dow === 0) cell.classList.add('sunday');
+      if (dow === 0 || isHoliday) cell.classList.add('sunday');
       if (dow === 6) cell.classList.add('saturday');
       if (today.getFullYear() === currentYear && today.getMonth() === currentMonth && today.getDate() === d)
         cell.classList.add('today');
@@ -401,6 +435,13 @@
       numEl.className = 'day-num';
       numEl.textContent = d;
       cell.appendChild(numEl);
+
+      if (isHoliday) {
+        const hlEl = document.createElement('div');
+        hlEl.className = 'day-holiday';
+        hlEl.textContent = HOLIDAYS[dateStr];
+        cell.appendChild(hlEl);
+      }
 
       if (dayData) {
         const emojiEl = document.createElement('div');

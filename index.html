@@ -26,21 +26,16 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: 'Noto Sans KR', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      -webkit-tap-highlight-color: transparent;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; -webkit-tap-highlight-color: transparent;
     }
 
     /* ── 헤더 ── */
     header {
       background: linear-gradient(135deg, var(--primary), #9b72f5);
-      color: white;
-      padding: 24px 20px 20px;
-      text-align: center;
+      color: white; padding: 24px 20px 20px; text-align: center;
     }
     header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; }
     .header-sub {
@@ -54,13 +49,9 @@
 
     /* ── 레이아웃 ── */
     .container { max-width: 680px; margin: 0 auto; padding: 16px 14px 40px; }
-
     .card {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 18px 16px;
-      margin-bottom: 14px;
-      box-shadow: var(--shadow);
+      background: var(--card); border-radius: var(--radius);
+      padding: 18px 16px; margin-bottom: 14px; box-shadow: var(--shadow);
     }
     .card-title {
       font-size: 0.8rem; font-weight: 600; color: var(--text-sub);
@@ -68,44 +59,48 @@
       margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
     }
 
-    /* ── 일당 선택 ── */
-    .wage-scroll {
-      display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px;
-      scrollbar-width: none;
+    /* ── 현장 관리 ── */
+    .site-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+    .site-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; background: var(--bg);
+      border-radius: 12px; border: 1.5px solid var(--border);
     }
-    .wage-scroll::-webkit-scrollbar { display: none; }
+    .site-dot {
+      width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0;
+    }
+    .site-info { flex: 1; min-width: 0; }
+    .site-name { font-size: 0.95rem; font-weight: 700; }
+    .site-wage { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
+    .site-actions { display: flex; gap: 6px; }
+    .btn-site-edit {
+      padding: 4px 10px; border-radius: 8px; font-size: 0.75rem;
+      border: 1.5px solid var(--border); background: white;
+      color: var(--text-sub); cursor: pointer; font-family: inherit;
+      transition: all 0.15s;
+    }
+    .btn-site-edit:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-site-del {
+      padding: 4px 10px; border-radius: 8px; font-size: 0.75rem;
+      border: 1.5px solid #fca5a5; background: var(--red-light);
+      color: var(--red); cursor: pointer; font-family: inherit;
+      transition: all 0.15s;
+    }
+    .btn-site-del:hover { background: #fee2e2; }
 
-    .wage-btn {
-      flex-shrink: 0;
-      display: flex; align-items: center;
-      background: var(--bg); border: 2px solid var(--border);
-      border-radius: 50px; padding: 7px 16px;
-      cursor: pointer; font-size: 0.9rem; font-weight: 500;
-      color: var(--text); transition: all 0.18s;
-      white-space: nowrap; font-family: inherit;
+    .btn-add-site {
+      width: 100%; padding: 10px; border-radius: 12px;
+      border: 2px dashed var(--border); background: transparent;
+      color: var(--text-sub); font-size: 0.9rem; font-weight: 600;
+      cursor: pointer; font-family: inherit; transition: all 0.15s;
     }
-    .wage-btn input[type="radio"] { display: none; }
-    .wage-btn:has(input:checked) {
-      background: var(--primary); border-color: var(--primary); color: white;
-      font-weight: 700;
-    }
+    .btn-add-site:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
 
-    .custom-wage {
-      display: none; align-items: center; gap: 8px; margin-top: 10px;
-    }
-    .custom-wage.visible { display: flex; }
-    .custom-wage input {
-      flex: 1; border: 2px solid var(--border); border-radius: 10px;
-      padding: 8px 12px; font-size: 0.95rem; font-family: inherit;
-      outline: none; transition: border-color 0.2s; color: var(--text);
-    }
-    .custom-wage input:focus { border-color: var(--primary); }
-    .custom-wage span { color: var(--text-sub); font-size: 0.9rem; white-space: nowrap; }
+    .empty-site { text-align: center; padding: 16px 0; color: var(--text-sub); font-size: 0.88rem; }
 
     /* ── 월 네비게이션 ── */
     .month-nav {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 14px;
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
     }
     .nav-btn {
       width: 36px; height: 36px; border-radius: 50%;
@@ -118,60 +113,60 @@
     .month-title { font-size: 1.15rem; font-weight: 700; color: var(--text); }
 
     /* ── 캘린더 ── */
-    .calendar-grid {
-      display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
-    }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
     .day-header {
       text-align: center; font-size: 0.72rem; font-weight: 600;
       padding: 4px 0 8px; color: var(--text-sub);
     }
     .day-header:first-child { color: var(--red); }
-    .day-header:last-child { color: var(--primary); }
+    .day-header:last-child  { color: var(--primary); }
 
     .day-cell {
-      border-radius: 10px; padding: 6px 3px 5px;
+      border-radius: 10px; padding: 5px 3px 4px;
       text-align: center; cursor: pointer;
-      transition: all 0.15s; min-height: 68px;
-      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      transition: all 0.15s; min-height: 72px;
+      display: flex; flex-direction: column; align-items: center; gap: 1px;
       border: 1.5px solid transparent; background: var(--bg);
+      position: relative; overflow: hidden;
     }
     .day-cell:active:not(.empty) { transform: scale(0.95); }
-    .day-cell:hover:not(.empty) { border-color: var(--primary); background: var(--primary-light); }
+    .day-cell:hover:not(.empty)  { border-color: var(--primary); background: var(--primary-light); }
     .day-cell.empty { background: transparent; cursor: default; }
-
-    .day-cell.today {
-      border-color: var(--primary); background: var(--primary-light);
-    }
+    .day-cell.today { border-color: var(--primary); background: var(--primary-light); }
     .day-cell.today .day-num {
       background: var(--primary); color: white;
       border-radius: 50%; width: 22px; height: 22px;
       display: flex; align-items: center; justify-content: center;
     }
-    .day-cell.worked { background: #f0f4ff; border-color: #c7d2fe; }
+    .day-cell.worked { background: #f8f9ff; }
+
+    /* 현장 색상 스트립 */
+    .day-site-strip {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 4px; border-radius: 10px 10px 0 0;
+    }
 
     .day-num {
       font-size: 0.82rem; font-weight: 600; color: var(--text);
       min-width: 22px; height: 22px;
       display: flex; align-items: center; justify-content: center;
+      margin-top: 3px;
     }
-    .day-cell.sunday .day-num { color: var(--red); }
+    .day-cell.sunday .day-num   { color: var(--red); }
     .day-cell.saturday .day-num { color: var(--primary); }
     .day-cell.today.sunday .day-num,
     .day-cell.today.saturday .day-num { color: white; }
 
     .day-holiday { font-size: 0.5rem; color: var(--red); line-height: 1.2; text-align: center; max-width: 100%; overflow: hidden; }
-    .attend-emoji { font-size: 1.2rem; line-height: 1; }
-    .day-wage { font-size: 0.62rem; font-weight: 700; color: var(--primary); line-height: 1; }
-    .day-expense { font-size: 0.55rem; color: var(--text-sub); line-height: 1.3; }
+    .attend-emoji { font-size: 1.1rem; line-height: 1; }
+    .day-site-label { font-size: 0.55rem; font-weight: 700; line-height: 1.2; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 2px; }
+    .day-wage    { font-size: 0.6rem; font-weight: 700; color: var(--primary); line-height: 1; }
+    .day-expense { font-size: 0.52rem; color: var(--text-sub); line-height: 1.3; }
 
     /* ── 요약 ── */
-    .summary-grid {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
-    }
-    .summary-item {
-      border-radius: 12px; padding: 14px 12px; text-align: center;
-    }
-    .summary-item .s-icon { font-size: 1.3rem; margin-bottom: 4px; }
+    .summary-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .summary-item { border-radius: 12px; padding: 14px 12px; text-align: center; }
+    .summary-item .s-icon  { font-size: 1.3rem; margin-bottom: 4px; }
     .summary-item .s-label { font-size: 0.72rem; color: var(--text-sub); margin-bottom: 4px; font-weight: 500; }
     .summary-item .s-value { font-size: 1.1rem; font-weight: 700; }
     .s-days   { background: #f0f4ff; } .s-days .s-value   { color: var(--primary); }
@@ -186,6 +181,18 @@
     }
     .s-net .s-label { color: rgba(255,255,255,0.8); font-size: 0.82rem; font-weight: 500; }
     .s-net .s-value { color: white; font-size: 1.5rem; font-weight: 700; }
+
+    /* 현장별 요약 */
+    .site-summary-list { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+    .site-summary-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 10px; background: var(--bg);
+      border-left: 4px solid var(--border);
+    }
+    .site-summary-info { flex: 1; }
+    .site-summary-name { font-size: 0.88rem; font-weight: 700; }
+    .site-summary-detail { font-size: 0.75rem; color: var(--text-sub); margin-top: 2px; }
+    .site-summary-amount { font-size: 0.95rem; font-weight: 700; }
 
     /* 요약 헤더 */
     .summary-header {
@@ -203,6 +210,35 @@
     .btn-reset.danger { border-color: #fca5a5; color: var(--red); background: var(--red-light); }
     .btn-reset.danger:hover { background: #fee2e2; }
 
+    /* ── 연간 통계 ── */
+    .year-totals { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .year-total-item { border-radius: 12px; padding: 14px; text-align: center; }
+    .yt-days { background: #f0f4ff; }
+    .yt-net  { background: linear-gradient(135deg, var(--primary), #9b72f5); }
+    .yt-label { font-size: 0.72rem; font-weight: 500; margin-bottom: 4px; }
+    .yt-days .yt-label { color: var(--text-sub); }
+    .yt-net  .yt-label { color: rgba(255,255,255,0.8); }
+    .yt-value { font-size: 1.15rem; font-weight: 700; }
+    .yt-days .yt-value { color: var(--primary); }
+    .yt-net  .yt-value { color: white; }
+
+    .month-bars { display: flex; flex-direction: column; gap: 8px; }
+    .month-row {
+      display: grid; grid-template-columns: 36px 1fr 80px;
+      align-items: center; gap: 8px;
+    }
+    .month-row.current-month .month-label { color: var(--primary); font-weight: 700; }
+    .month-label { font-size: 0.8rem; color: var(--text-sub); font-weight: 500; text-align: right; }
+    .bar-track { background: var(--bg); border-radius: 6px; height: 20px; overflow: hidden; }
+    .bar-fill {
+      height: 100%; border-radius: 6px;
+      background: linear-gradient(90deg, var(--primary), #9b72f5);
+      transition: width 0.5s ease; min-width: 0;
+    }
+    .bar-fill.empty { background: var(--border); }
+    .month-amount { font-size: 0.78rem; font-weight: 600; color: var(--text); text-align: right; white-space: nowrap; }
+    .month-amount.zero { color: var(--text-sub); font-weight: 400; }
+
     /* ── 백업/복원 ── */
     .io-row { display: flex; gap: 10px; }
     .btn-io {
@@ -214,10 +250,7 @@
     .btn-io.export:hover { background: var(--primary); color: white; }
     .btn-io.import { background: var(--green-light); color: var(--green); }
     .btn-io.import:hover { background: var(--green); color: white; }
-    .import-msg {
-      font-size: 0.8rem; color: var(--green); margin-top: 8px;
-      display: none; font-weight: 500;
-    }
+    .import-msg { font-size: 0.8rem; color: var(--green); margin-top: 8px; display: none; font-weight: 500; }
 
     /* ── 모달 (바텀시트) ── */
     .modal-overlay {
@@ -227,12 +260,12 @@
     }
     .modal-overlay.open { display: flex; }
     .modal {
-      background: white;
-      border-radius: 24px 24px 0 0;
+      background: white; border-radius: 24px 24px 0 0;
       padding: 12px 20px 32px;
       width: 100%; max-width: 680px;
       box-shadow: 0 -4px 40px rgba(0,0,0,0.15);
       animation: slideUp 0.25s ease;
+      max-height: 90vh; overflow-y: auto;
     }
     @keyframes slideUp {
       from { transform: translateY(100%); opacity: 0; }
@@ -242,14 +275,32 @@
       width: 40px; height: 4px; background: var(--border);
       border-radius: 2px; margin: 0 auto 16px;
     }
-    .modal-title {
-      font-size: 1rem; font-weight: 700; color: var(--text);
-      margin-bottom: 16px; text-align: center;
+    .modal-title { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 16px; text-align: center; }
+
+    /* 현장 선택 (모달) */
+    .site-picker-label { font-size: 0.8rem; font-weight: 600; color: var(--text-sub); margin-bottom: 8px; }
+    .site-picker {
+      display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 16px;
+    }
+    .site-pick-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: 20px;
+      border: 2px solid var(--border); background: var(--bg);
+      cursor: pointer; font-size: 0.88rem; font-weight: 600;
+      font-family: inherit; color: var(--text); transition: all 0.15s;
+    }
+    .site-pick-btn .sp-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .site-pick-btn.selected { font-weight: 700; color: white; }
+    .no-site-msg { font-size: 0.85rem; color: var(--text-sub); padding: 8px 0; }
+
+    .modal-wage-preview {
+      background: var(--primary-light); border-radius: 10px;
+      padding: 10px 14px; font-size: 0.9rem; font-weight: 700;
+      color: var(--primary); margin-bottom: 14px; text-align: center; display: none;
     }
 
     .emoji-grid {
-      display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
-      margin-bottom: 18px;
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 18px;
     }
     .emoji-btn {
       display: flex; flex-direction: column; align-items: center; gap: 4px;
@@ -257,19 +308,14 @@
       border-radius: 12px; padding: 10px 6px; cursor: pointer;
       transition: all 0.15s; font-family: inherit;
     }
-    .emoji-btn .e-icon { font-size: 1.6rem; line-height: 1; }
+    .emoji-btn .e-icon  { font-size: 1.6rem; line-height: 1; }
     .emoji-btn .e-label { font-size: 0.65rem; color: var(--text-sub); font-weight: 500; }
     .emoji-btn:hover { border-color: var(--primary); background: var(--primary-light); }
-    .emoji-btn.selected {
-      border-color: var(--primary); background: var(--primary-light);
-    }
+    .emoji-btn.selected { border-color: var(--primary); background: var(--primary-light); }
     .emoji-btn.selected .e-label { color: var(--primary); }
 
     .input-group { margin-bottom: 12px; }
-    .input-group label {
-      display: block; font-size: 0.8rem; font-weight: 600;
-      color: var(--text-sub); margin-bottom: 5px;
-    }
+    .input-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-sub); margin-bottom: 5px; }
     .input-group input {
       width: 100%; border: 2px solid var(--border); border-radius: 10px;
       padding: 10px 12px; font-size: 0.95rem; font-family: inherit;
@@ -300,43 +346,28 @@
     }
     .btn-save:hover { background: var(--primary-dark); }
 
-    /* ── 연간 통계 ── */
-    .year-totals {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;
+    /* ── 현장 추가/수정 모달 ── */
+    .site-modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 300;
+      align-items: center; justify-content: center; padding: 20px;
     }
-    .year-total-item {
-      border-radius: 12px; padding: 14px; text-align: center;
+    .site-modal-overlay.open { display: flex; }
+    .site-modal {
+      background: white; border-radius: 20px; padding: 24px;
+      width: 100%; max-width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
     }
-    .yt-days { background: #f0f4ff; }
-    .yt-net  { background: linear-gradient(135deg, var(--primary), #9b72f5); }
-    .yt-label { font-size: 0.72rem; font-weight: 500; margin-bottom: 4px; }
-    .yt-days .yt-label { color: var(--text-sub); }
-    .yt-net  .yt-label { color: rgba(255,255,255,0.8); }
-    .yt-value { font-size: 1.15rem; font-weight: 700; }
-    .yt-days .yt-value { color: var(--primary); }
-    .yt-net  .yt-value { color: white; }
-
-    .month-bars { display: flex; flex-direction: column; gap: 8px; }
-    .month-row {
-      display: grid; grid-template-columns: 36px 1fr 80px;
-      align-items: center; gap: 8px;
+    .site-modal h3 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; }
+    .site-modal .input-group input { font-size: 1rem; padding: 12px; }
+    .color-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+    .color-dot {
+      width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+      border: 3px solid transparent; transition: all 0.15s;
     }
-    .month-row.current-month .month-label { color: var(--primary); font-weight: 700; }
-    .month-label { font-size: 0.8rem; color: var(--text-sub); font-weight: 500; text-align: right; }
-    .bar-track {
-      background: var(--bg); border-radius: 6px; height: 20px; overflow: hidden;
-    }
-    .bar-fill {
-      height: 100%; border-radius: 6px;
-      background: linear-gradient(90deg, var(--primary), #9b72f5);
-      transition: width 0.5s ease; min-width: 0;
-    }
-    .bar-fill.empty { background: var(--border); }
-    .month-amount { font-size: 0.78rem; font-weight: 600; color: var(--text); text-align: right; white-space: nowrap; }
-    .month-amount.zero { color: var(--text-sub); font-weight: 400; }
+    .color-dot.selected { border-color: var(--text); transform: scale(1.15); }
 
     @media (max-width: 400px) {
-      .day-cell { min-height: 58px; }
+      .day-cell { min-height: 62px; }
       .attend-emoji { font-size: 1rem; }
     }
   </style>
@@ -352,30 +383,11 @@
 
 <div class="container">
 
-  <!-- 일당 설정 -->
+  <!-- 현장 관리 -->
   <div class="card">
-    <div class="card-title">💼 일당 설정</div>
-    <div class="wage-scroll" id="wageScroll">
-      <label class="wage-btn"><input type="radio" name="wage" value="100000"><span>10만원</span></label>
-      <label class="wage-btn"><input type="radio" name="wage" value="110000"><span>11만원</span></label>
-      <label class="wage-btn"><input type="radio" name="wage" value="120000"><span>12만원</span></label>
-      <label class="wage-btn"><input type="radio" name="wage" value="130000"><span>13만원</span></label>
-      <label class="wage-btn"><input type="radio" name="wage" value="140000"><span>14만원</span></label>
-      <label class="wage-btn"><input type="radio" name="wage" value="150000"><span>15만원</span></label>
-      <label class="wage-btn"><input type="radio" name="wage" value="160000"><span>16만원</span></label>
-      <label class="wage-btn"><input type="radio" name="wage" value="170000"><span>17만원</span></label>
-      <label class="wage-btn"><input type="radio" name="wage" value="180000"><span>18만원</span></label>
-      <label class="wage-btn"><input type="radio" name="wage" value="190000"><span>19만원</span></label>
-      <label class="wage-btn"><input type="radio" name="wage" value="200000"><span>20만원</span></label>
-      <label class="wage-btn"><input type="radio" name="wage" value="210000"><span>21만원</span></label>
-      <label class="wage-btn"><input type="radio" name="wage" value="220000"><span>22만원</span></label>
-      <label class="wage-btn"><input type="radio" name="wage" value="230000"><span>23만원</span></label>
-      <label class="wage-btn"><input type="radio" name="wage" value="custom" id="radioCustom"><span>직접입력</span></label>
-    </div>
-    <div class="custom-wage" id="customWageArea">
-      <input type="number" id="customWageInput" placeholder="금액 입력" min="0" step="1000" />
-      <span>원</span>
-    </div>
+    <div class="card-title">🏗️ 현장 관리</div>
+    <div class="site-list" id="siteList"></div>
+    <button class="btn-add-site" id="btnAddSite">+ 현장 추가</button>
   </div>
 
   <!-- 캘린더 -->
@@ -425,6 +437,8 @@
         <div style="font-size:2rem;">💰</div>
       </div>
     </div>
+    <!-- 현장별 요약 -->
+    <div class="site-summary-list" id="siteSummaryList"></div>
   </div>
 
   <!-- 연간 통계 -->
@@ -456,11 +470,15 @@
 
 </div>
 
-<!-- 모달 (바텀시트) -->
+<!-- 날짜 기록 모달 -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title" id="modalTitle">날짜 기록</div>
+
+    <div class="site-picker-label">🏗️ 현장 선택</div>
+    <div class="site-picker" id="sitePicker"></div>
+    <div class="modal-wage-preview" id="modalWagePreview"></div>
 
     <div class="emoji-grid">
       <button class="emoji-btn" data-emoji="✅"><span class="e-icon">✅</span><span class="e-label">출근</span></button>
@@ -487,25 +505,168 @@
   </div>
 </div>
 
+<!-- 현장 추가/수정 모달 -->
+<div class="site-modal-overlay" id="siteModalOverlay">
+  <div class="site-modal">
+    <h3 id="siteModalTitle">현장 추가</h3>
+    <div class="input-group">
+      <label>현장 이름</label>
+      <input type="text" id="siteNameInput" placeholder="예: 강남 현장" maxlength="10" />
+    </div>
+    <div class="input-group">
+      <label>일당 (원)</label>
+      <input type="number" id="siteWageInput" placeholder="예: 150000" min="0" step="1000" />
+    </div>
+    <div class="input-group">
+      <label>색상</label>
+      <div class="color-picker" id="colorPicker"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" id="btnSiteCancel">취소</button>
+      <button class="btn-save"   id="btnSiteSave">저장</button>
+    </div>
+  </div>
+</div>
+
 <script>
+  const SITE_COLORS = ['#5b6ef5','#22c55e','#f59e0b','#ef4444','#9333ea','#06b6d4','#ec4899','#84cc16','#f97316','#14b8a6'];
+  const WORK_EMOJIS = new Set(['✅','⭐']);
+
   let currentYear  = new Date().getFullYear();
   let currentMonth = new Date().getMonth();
-  let selectedDate = null;
+  let selectedDate  = null;
   let selectedEmoji = null;
+  let selectedSiteId = null;
+  let editingSiteId  = null;
+  let pickedColor    = SITE_COLORS[0];
 
-  const WORK_EMOJIS = new Set(['✅', '⭐']);
+  document.getElementById('headerToday').textContent =
+    new Date().toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'short' });
 
-  // 헤더 오늘 날짜
-  const todayStr = new Date().toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'short' });
-  document.getElementById('headerToday').textContent = todayStr;
+  // ── 현장 CRUD ─────────────────────────────
+  function getSites() {
+    const s = localStorage.getItem('sites');
+    return s ? JSON.parse(s) : [];
+  }
+  function saveSites(arr) { localStorage.setItem('sites', JSON.stringify(arr)); }
+  function getSiteById(id) { return getSites().find(s => s.id === id) || null; }
 
-  function getWage() {
-    const checked = document.querySelector('input[name="wage"]:checked');
-    if (!checked) return 0;
-    if (checked.value === 'custom') return parseInt(document.getElementById('customWageInput').value) || 0;
-    return parseInt(checked.value);
+  function renderSiteList() {
+    const sites = getSites();
+    const container = document.getElementById('siteList');
+    if (!sites.length) {
+      container.innerHTML = '<div class="empty-site">현장을 추가하면 날짜별로 구분해서 기록할 수 있어요</div>';
+      return;
+    }
+    container.innerHTML = '';
+    sites.forEach(site => {
+      const el = document.createElement('div');
+      el.className = 'site-item';
+      el.innerHTML = `
+        <div class="site-dot" style="background:${site.color}"></div>
+        <div class="site-info">
+          <div class="site-name">${site.name}</div>
+          <div class="site-wage">일당 ${site.wage.toLocaleString()}원</div>
+        </div>
+        <div class="site-actions">
+          <button class="btn-site-edit" data-id="${site.id}">수정</button>
+          <button class="btn-site-del"  data-id="${site.id}">삭제</button>
+        </div>`;
+      container.appendChild(el);
+    });
+    container.querySelectorAll('.btn-site-edit').forEach(btn => {
+      btn.addEventListener('click', () => openSiteModal(btn.dataset.id));
+    });
+    container.querySelectorAll('.btn-site-del').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!confirm('이 현장을 삭제할까요?')) return;
+        const sites = getSites().filter(s => s.id !== btn.dataset.id);
+        saveSites(sites);
+        renderSiteList(); renderCalendar();
+      });
+    });
   }
 
+  // ── 현장 모달 ─────────────────────────────
+  function openSiteModal(siteId = null) {
+    editingSiteId = siteId;
+    document.getElementById('siteModalTitle').textContent = siteId ? '현장 수정' : '현장 추가';
+
+    const colorPicker = document.getElementById('colorPicker');
+    colorPicker.innerHTML = '';
+    SITE_COLORS.forEach(c => {
+      const dot = document.createElement('div');
+      dot.className = 'color-dot' + (c === pickedColor ? ' selected' : '');
+      dot.style.background = c;
+      dot.addEventListener('click', () => {
+        pickedColor = c;
+        colorPicker.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+        dot.classList.add('selected');
+      });
+      colorPicker.appendChild(dot);
+    });
+
+    if (siteId) {
+      const site = getSiteById(siteId);
+      if (site) {
+        document.getElementById('siteNameInput').value = site.name;
+        document.getElementById('siteWageInput').value = site.wage;
+        pickedColor = site.color;
+        colorPicker.querySelectorAll('.color-dot').forEach(d => {
+          d.classList.toggle('selected', d.style.background === site.color ||
+            d.style.backgroundColor === site.color);
+        });
+      }
+    } else {
+      document.getElementById('siteNameInput').value = '';
+      document.getElementById('siteWageInput').value = '';
+      const used = getSites().map(s => s.color);
+      pickedColor = SITE_COLORS.find(c => !used.includes(c)) || SITE_COLORS[0];
+      colorPicker.querySelectorAll('.color-dot').forEach(d => {
+        d.classList.toggle('selected', d.style.background === pickedColor ||
+          d.style.backgroundColor === pickedColor);
+      });
+    }
+    document.getElementById('siteModalOverlay').classList.add('open');
+    document.getElementById('siteNameInput').focus();
+  }
+
+  function closeSiteModal() {
+    document.getElementById('siteModalOverlay').classList.remove('open');
+    editingSiteId = null;
+  }
+
+  document.getElementById('btnAddSite').addEventListener('click', () => openSiteModal());
+  document.getElementById('btnSiteCancel').addEventListener('click', closeSiteModal);
+  document.getElementById('siteModalOverlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('siteModalOverlay')) closeSiteModal();
+  });
+
+  document.getElementById('btnSiteSave').addEventListener('click', () => {
+    const name = document.getElementById('siteNameInput').value.trim();
+    const wage = parseInt(document.getElementById('siteWageInput').value) || 0;
+    if (!name) { alert('현장 이름을 입력해주세요!'); return; }
+    if (!wage)  { alert('일당을 입력해주세요!'); return; }
+
+    const sites = getSites();
+    if (editingSiteId) {
+      const idx = sites.findIndex(s => s.id === editingSiteId);
+      if (idx !== -1) sites[idx] = { ...sites[idx], name, wage, color: pickedColor };
+    } else {
+      sites.push({ id: 'site_' + Date.now(), name, wage, color: pickedColor });
+    }
+    saveSites(sites);
+    closeSiteModal();
+    renderSiteList(); renderCalendar();
+  });
+
+  // ── 날짜 데이터 ─────────────────────────────
+  function storageKey(d) { return 'daywage_' + d; }
+  function loadDay(d)     { const r = localStorage.getItem(storageKey(d)); return r ? JSON.parse(r) : null; }
+  function saveDay(d, v)  { localStorage.setItem(storageKey(d), JSON.stringify(v)); }
+  function deleteDay(d)   { localStorage.removeItem(storageKey(d)); }
+
+  // ── 공휴일 ─────────────────────────────────
   const HOLIDAYS = {
     '2024-01-01':'신정','2024-02-09':'설 연휴','2024-02-10':'설날','2024-02-11':'설 연휴',
     '2024-02-12':'대체공휴일','2024-03-01':'삼일절','2024-05-05':'어린이날',
@@ -529,11 +690,7 @@
     '2027-10-03':'개천절','2027-10-09':'한글날','2027-12-25':'성탄절',
   };
 
-  function storageKey(d) { return 'daywage_' + d; }
-  function loadDay(d)  { const r = localStorage.getItem(storageKey(d)); return r ? JSON.parse(r) : null; }
-  function saveDay(d, v) { localStorage.setItem(storageKey(d), JSON.stringify(v)); }
-  function deleteDay(d)  { localStorage.removeItem(storageKey(d)); }
-
+  // ── 캘린더 ─────────────────────────────────
   function renderCalendar() {
     const grid = document.getElementById('calendarGrid');
     grid.innerHTML = '';
@@ -546,9 +703,9 @@
       grid.appendChild(el);
     });
 
-    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const firstDay    = new Date(currentYear, currentMonth, 1).getDay();
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-    const today = new Date();
+    const today       = new Date();
 
     for (let i = 0; i < firstDay; i++) {
       const e = document.createElement('div'); e.className = 'day-cell empty'; grid.appendChild(e);
@@ -557,16 +714,26 @@
     for (let d = 1; d <= daysInMonth; d++) {
       const dateStr = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
       const dayData = loadDay(dateStr);
-      const dow = new Date(currentYear, currentMonth, d).getDay();
+      const dow      = new Date(currentYear, currentMonth, d).getDay();
       const isHoliday = !!HOLIDAYS[dateStr];
-      const isToday = today.getFullYear() === currentYear && today.getMonth() === currentMonth && today.getDate() === d;
+      const isToday   = today.getFullYear() === currentYear && today.getMonth() === currentMonth && today.getDate() === d;
+
+      const site = dayData?.siteId ? getSiteById(dayData.siteId) : null;
 
       const cell = document.createElement('div');
       cell.className = 'day-cell';
       if (dow === 0 || isHoliday) cell.classList.add('sunday');
       if (dow === 6) cell.classList.add('saturday');
-      if (isToday) cell.classList.add('today');
-      if (dayData) cell.classList.add('worked');
+      if (isToday)   cell.classList.add('today');
+      if (dayData)   cell.classList.add('worked');
+
+      // 현장 색상 스트립
+      if (site) {
+        const strip = document.createElement('div');
+        strip.className = 'day-site-strip';
+        strip.style.background = site.color;
+        cell.appendChild(strip);
+      }
 
       const numEl = document.createElement('div');
       numEl.className = 'day-num';
@@ -585,6 +752,14 @@
         emoji.className = 'attend-emoji';
         emoji.textContent = dayData.emoji || '';
         cell.appendChild(emoji);
+
+        if (site) {
+          const sl = document.createElement('div');
+          sl.className = 'day-site-label';
+          sl.style.color = site.color;
+          sl.textContent = site.name.length > 4 ? site.name.slice(0, 4) : site.name;
+          cell.appendChild(sl);
+        }
 
         if (WORK_EMOJIS.has(dayData.emoji) && dayData.wage) {
           const w = document.createElement('div');
@@ -612,79 +787,57 @@
     updateYearStats();
   }
 
-  function getMonthNet(year, month) {
-    const days = new Date(year, month + 1, 0).getDate();
-    let workDays = 0, income = 0, meal = 0, transport = 0;
-    for (let d = 1; d <= days; d++) {
-      const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      const data = loadDay(dateStr);
-      if (!data) continue;
-      if (WORK_EMOJIS.has(data.emoji)) {
-        workDays++;
-        income    += data.wage      || 0;
-        meal      += data.meal      || 0;
-        transport += data.transport || 0;
-      }
+  // ── 날짜 모달 ─────────────────────────────
+  function renderSitePicker(selectedId) {
+    const sites  = getSites();
+    const picker = document.getElementById('sitePicker');
+    picker.innerHTML = '';
+    if (!sites.length) {
+      picker.innerHTML = '<div class="no-site-msg">위에서 현장을 먼저 추가해주세요</div>';
+      return;
     }
-    return { workDays, income, meal, transport, net: income + meal + transport };
-  }
-
-  function updateYearStats() {
-    document.getElementById('yearTitle').textContent = `${currentYear}년`;
-    const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-    const monthData = MONTHS.map((_, i) => ({ ...getMonthNet(currentYear, i), label: MONTHS[i], idx: i }));
-
-    const maxNet  = Math.max(...monthData.map(m => m.net), 1);
-    const yearDays = monthData.reduce((acc, m) => acc + m.workDays, 0);
-    const yearNet  = monthData.reduce((acc, m) => acc + m.net, 0);
-
-    document.getElementById('yearDays').textContent = `${yearDays}일`;
-    document.getElementById('yearNet').textContent  = `${yearNet.toLocaleString()}원`;
-
-    const container = document.getElementById('monthBars');
-    container.innerHTML = '';
-    monthData.forEach(m => {
-      const row = document.createElement('div');
-      row.className = 'month-row' + (m.idx === currentMonth ? ' current-month' : '');
-
-      const label = document.createElement('div');
-      label.className = 'month-label';
-      label.textContent = m.label;
-
-      const track = document.createElement('div');
-      track.className = 'bar-track';
-      const fill = document.createElement('div');
-      fill.className = 'bar-fill' + (m.net === 0 ? ' empty' : '');
-      fill.style.width = m.net === 0 ? '4px' : `${(m.net / maxNet) * 100}%`;
-      track.appendChild(fill);
-
-      const amount = document.createElement('div');
-      amount.className = 'month-amount' + (m.net === 0 ? ' zero' : '');
-      amount.textContent = m.net === 0 ? '-' : `${(m.net / 10000).toFixed(0)}만원`;
-
-      row.appendChild(label);
-      row.appendChild(track);
-      row.appendChild(amount);
-      container.appendChild(row);
+    sites.forEach(site => {
+      const btn = document.createElement('button');
+      btn.className = 'site-pick-btn' + (site.id === selectedId ? ' selected' : '');
+      if (site.id === selectedId) btn.style.background = site.color;
+      btn.innerHTML = `<span class="sp-dot" style="background:${site.color}"></span>${site.name}`;
+      btn.addEventListener('click', () => {
+        selectedSiteId = site.id;
+        document.querySelectorAll('.site-pick-btn').forEach(b => {
+          b.classList.remove('selected');
+          b.style.background = '';
+        });
+        btn.classList.add('selected');
+        btn.style.background = site.color;
+        updateWagePreview();
+      });
+      picker.appendChild(btn);
     });
   }
 
-  function updateSummary() {
-    const { workDays, income, meal, transport, net } = getMonthNet(currentYear, currentMonth);
-    document.getElementById('sumDays').textContent      = `${workDays}일`;
-    document.getElementById('sumIncome').textContent    = `${income.toLocaleString()}원`;
-    document.getElementById('sumMeal').textContent      = `${meal.toLocaleString()}원`;
-    document.getElementById('sumTransport').textContent = `${transport.toLocaleString()}원`;
-    document.getElementById('sumNet').textContent       = `${net.toLocaleString()}원`;
+  function updateWagePreview() {
+    const preview = document.getElementById('modalWagePreview');
+    const site = selectedSiteId ? getSiteById(selectedSiteId) : null;
+    if (site) {
+      preview.textContent = `💼 ${site.name} 일당: ${site.wage.toLocaleString()}원`;
+      preview.style.display = 'block';
+      preview.style.color = site.color;
+      preview.style.background = site.color + '18';
+    } else {
+      preview.style.display = 'none';
+    }
   }
 
   function openModal(dateStr, day) {
-    selectedDate = dateStr;
+    selectedDate  = dateStr;
     selectedEmoji = null;
-    document.getElementById('modalTitle').textContent = `${currentYear}년 ${currentMonth+1}월 ${day}일`;
     const existing = loadDay(dateStr);
-    document.getElementById('modalMeal').value      = existing ? (existing.meal      || '') : '';
-    document.getElementById('modalTransport').value = existing ? (existing.transport || '') : '';
+    selectedSiteId = existing?.siteId || null;
+
+    document.getElementById('modalTitle').textContent = `${currentYear}년 ${currentMonth+1}월 ${day}일`;
+    document.getElementById('modalMeal').value      = existing?.meal      || '';
+    document.getElementById('modalTransport').value = existing?.transport || '';
+
     document.querySelectorAll('.emoji-btn').forEach(btn => {
       btn.classList.remove('selected');
       if (existing && btn.dataset.emoji === existing.emoji) {
@@ -692,6 +845,9 @@
         selectedEmoji = existing.emoji;
       }
     });
+
+    renderSitePicker(selectedSiteId);
+    updateWagePreview();
     document.getElementById('modalOverlay').classList.add('open');
   }
 
@@ -709,17 +865,23 @@
   });
 
   document.getElementById('btnCancel').addEventListener('click', closeModal);
+  document.getElementById('modalOverlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  });
 
   document.getElementById('btnSave').addEventListener('click', () => {
-    if (!selectedDate) return;
+    if (!selectedDate)  return;
     if (!selectedEmoji) { alert('상태를 선택해 주세요!'); return; }
-    if (WORK_EMOJIS.has(selectedEmoji) && !document.querySelector('input[name="wage"]:checked')) {
-      alert('일당을 선택해 주세요!'); return;
+    if (WORK_EMOJIS.has(selectedEmoji) && !selectedSiteId) {
+      alert('현장을 선택해 주세요!'); return;
     }
+
+    const site      = selectedSiteId ? getSiteById(selectedSiteId) : null;
+    const wage      = WORK_EMOJIS.has(selectedEmoji) ? (site?.wage || 0) : 0;
     const meal      = parseInt(document.getElementById('modalMeal').value)      || 0;
     const transport = parseInt(document.getElementById('modalTransport').value) || 0;
-    const wage = WORK_EMOJIS.has(selectedEmoji) ? getWage() : 0;
-    saveDay(selectedDate, { emoji: selectedEmoji, meal, transport, wage });
+
+    saveDay(selectedDate, { emoji: selectedEmoji, siteId: selectedSiteId, wage, meal, transport });
     closeModal(); renderCalendar();
   });
 
@@ -728,10 +890,94 @@
     deleteDay(selectedDate); closeModal(); renderCalendar();
   });
 
-  document.getElementById('modalOverlay').addEventListener('click', (e) => {
-    if (e.target === document.getElementById('modalOverlay')) closeModal();
-  });
+  // ── 요약 ────────────────────────────────────
+  function getMonthNet(year, month) {
+    const days = new Date(year, month + 1, 0).getDate();
+    let workDays = 0, income = 0, meal = 0, transport = 0;
+    const siteMap = {};
+    for (let d = 1; d <= days; d++) {
+      const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const data = loadDay(dateStr);
+      if (!data || !WORK_EMOJIS.has(data.emoji)) continue;
+      workDays++;
+      income    += data.wage      || 0;
+      meal      += data.meal      || 0;
+      transport += data.transport || 0;
+      const sid = data.siteId || 'none';
+      if (!siteMap[sid]) siteMap[sid] = { days: 0, income: 0 };
+      siteMap[sid].days++;
+      siteMap[sid].income += data.wage || 0;
+    }
+    return { workDays, income, meal, transport, net: income + meal + transport, siteMap };
+  }
 
+  function updateSummary() {
+    const { workDays, income, meal, transport, net, siteMap } = getMonthNet(currentYear, currentMonth);
+    document.getElementById('sumDays').textContent      = `${workDays}일`;
+    document.getElementById('sumIncome').textContent    = `${income.toLocaleString()}원`;
+    document.getElementById('sumMeal').textContent      = `${meal.toLocaleString()}원`;
+    document.getElementById('sumTransport').textContent = `${transport.toLocaleString()}원`;
+    document.getElementById('sumNet').textContent       = `${net.toLocaleString()}원`;
+
+    // 현장별 요약
+    const listEl = document.getElementById('siteSummaryList');
+    const sites  = getSites();
+    const entries = Object.entries(siteMap).filter(([, v]) => v.days > 0);
+    if (!entries.length) { listEl.innerHTML = ''; return; }
+
+    listEl.innerHTML = '<div style="font-size:0.75rem;font-weight:600;color:var(--text-sub);margin-bottom:6px;">현장별 내역</div>';
+    entries.forEach(([sid, v]) => {
+      const site = sites.find(s => s.id === sid);
+      const name  = site ? site.name : '미분류';
+      const color = site ? site.color : '#9ca3af';
+      const el = document.createElement('div');
+      el.className = 'site-summary-item';
+      el.style.borderLeftColor = color;
+      el.innerHTML = `
+        <div class="site-summary-info">
+          <div class="site-summary-name" style="color:${color}">${name}</div>
+          <div class="site-summary-detail">${v.days}일 출근</div>
+        </div>
+        <div class="site-summary-amount" style="color:${color}">${v.income.toLocaleString()}원</div>`;
+      listEl.appendChild(el);
+    });
+  }
+
+  function updateYearStats() {
+    document.getElementById('yearTitle').textContent = `${currentYear}년`;
+    const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+    const monthData = MONTHS.map((_, i) => ({ ...getMonthNet(currentYear, i), label: MONTHS[i], idx: i }));
+
+    const maxNet   = Math.max(...monthData.map(m => m.net), 1);
+    const yearDays = monthData.reduce((acc, m) => acc + m.workDays, 0);
+    const yearNet  = monthData.reduce((acc, m) => acc + m.net, 0);
+
+    document.getElementById('yearDays').textContent = `${yearDays}일`;
+    document.getElementById('yearNet').textContent  = `${yearNet.toLocaleString()}원`;
+
+    const container = document.getElementById('monthBars');
+    container.innerHTML = '';
+    monthData.forEach(m => {
+      const row = document.createElement('div');
+      row.className = 'month-row' + (m.idx === currentMonth ? ' current-month' : '');
+      const label = document.createElement('div');
+      label.className = 'month-label';
+      label.textContent = m.label;
+      const track = document.createElement('div');
+      track.className = 'bar-track';
+      const fill = document.createElement('div');
+      fill.className = 'bar-fill' + (m.net === 0 ? ' empty' : '');
+      fill.style.width = m.net === 0 ? '4px' : `${(m.net / maxNet) * 100}%`;
+      track.appendChild(fill);
+      const amount = document.createElement('div');
+      amount.className = 'month-amount' + (m.net === 0 ? ' zero' : '');
+      amount.textContent = m.net === 0 ? '-' : `${(m.net / 10000).toFixed(0)}만원`;
+      row.appendChild(label); row.appendChild(track); row.appendChild(amount);
+      container.appendChild(row);
+    });
+  }
+
+  // ── 네비게이션 ──────────────────────────────
   document.getElementById('prevMonth').addEventListener('click', () => {
     currentMonth--; if (currentMonth < 0) { currentMonth = 11; currentYear--; } renderCalendar();
   });
@@ -739,35 +985,7 @@
     currentMonth++; if (currentMonth > 11) { currentMonth = 0; currentYear++; } renderCalendar();
   });
 
-  document.querySelectorAll('input[name="wage"]').forEach(radio => {
-    radio.addEventListener('change', () => {
-      document.getElementById('customWageArea').classList.toggle('visible', radio.value === 'custom');
-      localStorage.setItem('selected_wage', radio.value);
-      if (radio.value === 'custom') {
-        const custom = document.getElementById('customWageInput').value;
-        if (custom) localStorage.setItem('custom_wage_value', custom);
-      }
-    });
-  });
-
-  document.getElementById('customWageInput').addEventListener('input', (e) => {
-    localStorage.setItem('custom_wage_value', e.target.value);
-  });
-
-  // 저장된 일당 복원
-  const savedWage = localStorage.getItem('selected_wage');
-  if (savedWage) {
-    const target = document.querySelector(`input[name="wage"][value="${savedWage}"]`);
-    if (target) {
-      target.checked = true;
-      if (savedWage === 'custom') {
-        document.getElementById('customWageArea').classList.add('visible');
-        const savedCustom = localStorage.getItem('custom_wage_value');
-        if (savedCustom) document.getElementById('customWageInput').value = savedCustom;
-      }
-    }
-  }
-
+  // ── 초기화 ──────────────────────────────────
   document.getElementById('btnResetMonth').addEventListener('click', () => {
     if (!confirm(`${currentYear}년 ${currentMonth+1}월 데이터를 모두 삭제할까요?`)) return;
     const days = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -777,9 +995,9 @@
     renderCalendar();
   });
 
-
+  // ── 백업/복원 ────────────────────────────────
   document.getElementById('btnExport').addEventListener('click', () => {
-    const data = {};
+    const data = { sites: getSites() };
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
       if (k.startsWith('daywage_')) data[k] = JSON.parse(localStorage.getItem(k));
@@ -796,18 +1014,23 @@
     reader.onload = (ev) => {
       try {
         const data = JSON.parse(ev.target.result);
-        Object.entries(data).forEach(([k, v]) => { if (k.startsWith('daywage_')) localStorage.setItem(k, JSON.stringify(v)); });
+        if (data.sites) saveSites(data.sites);
+        Object.entries(data).forEach(([k, v]) => {
+          if (k.startsWith('daywage_')) localStorage.setItem(k, JSON.stringify(v));
+        });
         const msg = document.getElementById('importMsg');
-        msg.textContent = `✅ ${Object.keys(data).length}개 데이터 복원 완료!`;
+        msg.textContent = `✅ 복원 완료!`;
         msg.style.display = 'block';
         setTimeout(() => msg.style.display = 'none', 3000);
-        renderCalendar();
+        renderSiteList(); renderCalendar();
       } catch { alert('파일을 읽을 수 없어요.'); }
     };
     reader.readAsText(file);
     e.target.value = '';
   });
 
+  // ── 초기 렌더 ────────────────────────────────
+  renderSiteList();
   renderCalendar();
 </script>
 </body>

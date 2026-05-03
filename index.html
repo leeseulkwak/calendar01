@@ -95,8 +95,7 @@
     .empty-site { text-align:center; padding:14px 0; color:var(--text-sub); font-size:0.85rem; line-height:1.6; }
 
     /* ── 월 네비게이션 ── */
-    .month-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-    .month-nav-left { display:flex; align-items:center; gap:8px; }
+    .month-nav { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:4px; margin-bottom:12px; }
     .nav-btn {
       width:34px; height:34px; border-radius:50%;
       background:var(--primary-light); border:none;
@@ -105,7 +104,7 @@
       transition:all .15s; font-weight:700;
     }
     .nav-btn:hover { background:var(--primary); color:white; }
-    .month-title { font-size:1.1rem; font-weight:700; color:var(--text); }
+    .month-title { font-size:1.1rem; font-weight:700; color:var(--text); text-align:center; }
     .btn-today {
       padding:5px 11px; border-radius:20px; font-size:0.75rem; font-weight:700;
       background:var(--primary); color:white; border:none;
@@ -224,6 +223,28 @@
     .bar-fill.empty { background:var(--border); }
     .month-amount { font-size:0.75rem; font-weight:600; color:var(--text); text-align:right; white-space:nowrap; }
     .month-amount.zero { color:var(--text-sub); font-weight:400; }
+
+    /* ── 현장별 통계 ── */
+    .site-stat-tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+    .site-stat-tab {
+      display:flex; align-items:center; gap:5px;
+      padding:6px 12px; border-radius:20px;
+      border:2px solid var(--border); background:var(--bg);
+      cursor:pointer; font-size:0.82rem; font-weight:600;
+      font-family:inherit; color:var(--text); transition:all .15s;
+    }
+    .site-stat-tab.active { background:white; }
+    .site-stat-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .site-stat-totals { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
+    .sst-item { border-radius:10px; padding:12px 10px; text-align:center; }
+    .sst-label { font-size:0.7rem; color:var(--text-sub); font-weight:500; margin-bottom:3px; }
+    .sst-value { font-size:1.05rem; font-weight:700; }
+    .site-stat-year-nav {
+      display:flex; align-items:center; justify-content:center; gap:12px;
+      margin-bottom:10px;
+    }
+    .site-stat-year-label { font-size:1rem; font-weight:700; color:var(--text); }
+    .no-site-stat { text-align:center; padding:16px 0; color:var(--text-sub); font-size:0.85rem; line-height:1.6; }
 
     /* ── 백업/복원 ── */
     .io-row { display:flex; gap:10px; }
@@ -414,11 +435,11 @@
   <!-- 캘린더 -->
   <div class="card">
     <div class="month-nav">
-      <div class="month-nav-left">
+      <div style="display:flex;gap:6px;">
         <button class="nav-btn" id="prevMonth">&#8592;</button>
         <button class="nav-btn" id="nextMonth">&#8594;</button>
-        <span class="month-title" id="monthTitle"></span>
       </div>
+      <span class="month-title" id="monthTitle"></span>
       <div style="display:flex;align-items:center;gap:8px;">
         <span class="cal-month-stat" id="calMonthStat"></span>
         <button class="btn-today" id="btnToday">오늘</button>
@@ -479,6 +500,13 @@
       </div>
     </div>
     <div class="month-bars" id="monthBars"></div>
+  </div>
+
+  <!-- 현장별 통계 -->
+  <div class="card">
+    <div class="card-title" style="margin-bottom:12px;">🏗️ 현장별 통계</div>
+    <div class="site-stat-tabs" id="siteStatTabs"></div>
+    <div id="siteStatContent"></div>
   </div>
 
   <!-- 백업/복원 -->
@@ -579,6 +607,8 @@
   let selectedSiteId = null;
   let editingSiteId  = null;
   let pickedColor    = SITE_COLORS[0];
+  let selectedStatSiteId = null;
+  let statYear = new Date().getFullYear();
 
   const today = new Date();
 
@@ -633,6 +663,7 @@
     container.querySelectorAll('.btn-site-del').forEach(btn =>
       btn.addEventListener('click', () => {
         if (!confirm('이 현장을 삭제할까요?')) return;
+        if (selectedStatSiteId === btn.dataset.id) selectedStatSiteId = null;
         saveSites(getSites().filter(s => s.id !== btn.dataset.id));
         showToast('🗑️ 현장이 삭제됐어요');
         renderSiteList(); renderCalendar();
@@ -863,6 +894,7 @@
     updateSummary();
     updateYearStats();
     updateHeaderStats();
+    renderSiteStatTabs();
   }
 
   // ── 날짜 모달 ─────────────────────────────
@@ -1093,6 +1125,112 @@
     });
   }
 
+  // ── 현장별 통계 ─────────────────────────────
+  function getSiteTotalStats(siteId) {
+    let totalDays = 0, totalIncome = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k.startsWith('daywage_')) continue;
+      const data = JSON.parse(localStorage.getItem(k));
+      if (data && data.siteId === siteId && WORK_EMOJIS.has(data.emoji)) {
+        totalDays++;
+        totalIncome += data.wage || 0;
+      }
+    }
+    return { totalDays, totalIncome };
+  }
+
+  function getSiteYearData(siteId, year) {
+    return Array.from({ length: 12 }, (_, m) => {
+      const daysInMonth = new Date(year, m + 1, 0).getDate();
+      let workDays = 0, income = 0;
+      for (let d = 1; d <= daysInMonth; d++) {
+        const ds = `${year}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const data = loadDay(ds);
+        if (data && data.siteId === siteId && WORK_EMOJIS.has(data.emoji)) {
+          workDays++;
+          income += data.wage || 0;
+        }
+      }
+      return { label: `${m+1}월`, workDays, income, monthIdx: m };
+    });
+  }
+
+  function renderSiteStatContent() {
+    const content = document.getElementById('siteStatContent');
+    const site = getSiteById(selectedStatSiteId);
+    if (!site) { content.innerHTML = ''; return; }
+
+    const { totalDays, totalIncome } = getSiteTotalStats(site.id);
+    const monthData = getSiteYearData(site.id, statYear);
+    const maxIncome = Math.max(...monthData.map(m => m.income), 1);
+
+    content.innerHTML = `
+      <div class="site-stat-totals">
+        <div class="sst-item" style="background:${site.color}1a">
+          <div class="sst-label">누적 출근일</div>
+          <div class="sst-value" style="color:${site.color}">${totalDays}일</div>
+        </div>
+        <div class="sst-item" style="background:${site.color}1a">
+          <div class="sst-label">누적 수령액</div>
+          <div class="sst-value" style="color:${site.color}">${totalIncome >= 10000 ? (totalIncome/10000).toFixed(0)+'만원' : totalIncome.toLocaleString()+'원'}</div>
+        </div>
+      </div>
+      <div class="site-stat-year-nav">
+        <button class="nav-btn" id="btnStatPrevYear">&#8592;</button>
+        <span class="site-stat-year-label">${statYear}년</span>
+        <button class="nav-btn" id="btnStatNextYear">&#8594;</button>
+      </div>
+      <div class="month-bars" id="siteStatBars"></div>`;
+
+    const barsEl = document.getElementById('siteStatBars');
+    monthData.forEach(m => {
+      const row = document.createElement('div');
+      row.className = 'month-row' + (m.monthIdx === currentMonth && statYear === currentYear ? ' current-month' : '');
+      const label = document.createElement('div'); label.className = 'month-label'; label.textContent = m.label;
+      const track = document.createElement('div'); track.className = 'bar-track';
+      const fill  = document.createElement('div');
+      fill.className = 'bar-fill' + (m.income === 0 ? ' empty' : '');
+      fill.style.width = m.income === 0 ? '4px' : `${(m.income / maxIncome) * 100}%`;
+      if (m.income > 0) fill.style.background = `linear-gradient(90deg,${site.color},${site.color}99)`;
+      track.appendChild(fill);
+      const amount = document.createElement('div');
+      amount.className = 'month-amount' + (m.income === 0 ? ' zero' : '');
+      amount.textContent = m.income === 0 ? '-' : `${m.workDays}일 · ${(m.income/10000).toFixed(0)}만`;
+      row.appendChild(label); row.appendChild(track); row.appendChild(amount);
+      barsEl.appendChild(row);
+    });
+
+    document.getElementById('btnStatPrevYear').addEventListener('click', () => { statYear--; renderSiteStatContent(); });
+    document.getElementById('btnStatNextYear').addEventListener('click', () => { statYear++; renderSiteStatContent(); });
+  }
+
+  function renderSiteStatTabs() {
+    const sites = getSites();
+    const tabs = document.getElementById('siteStatTabs');
+    tabs.innerHTML = '';
+    if (!sites.length) {
+      tabs.innerHTML = '<div class="no-site-stat">현장을 추가하면 통계를 볼 수 있어요 👷</div>';
+      document.getElementById('siteStatContent').innerHTML = '';
+      return;
+    }
+    if (!selectedStatSiteId || !sites.find(s => s.id === selectedStatSiteId)) {
+      selectedStatSiteId = sites[0].id;
+    }
+    sites.forEach(site => {
+      const btn = document.createElement('button');
+      btn.className = 'site-stat-tab' + (site.id === selectedStatSiteId ? ' active' : '');
+      if (site.id === selectedStatSiteId) btn.style.borderColor = site.color;
+      btn.innerHTML = `<span class="site-stat-dot" style="background:${site.color}"></span>${site.name}`;
+      btn.addEventListener('click', () => {
+        selectedStatSiteId = site.id;
+        renderSiteStatTabs();
+      });
+      tabs.appendChild(btn);
+    });
+    renderSiteStatContent();
+  }
+
   // ── 초기화 ──────────────────────────────────
   document.getElementById('btnResetMonth').addEventListener('click', () => {
     if (!confirm(`${currentYear}년 ${currentMonth+1}월 데이터를 모두 삭제할까요?`)) return;
@@ -1138,7 +1276,7 @@
   // ── 초기 렌더 ────────────────────────────────
   initSiteCard();
   renderSiteList();
-  renderCalendar();
+  renderCalendar(); // renderCalendar 내부에서 renderSiteStatTabs 호출됨
 </script>
 </body>
 </html>

@@ -308,7 +308,7 @@
     /* 현장 선택 */
     .work-section { transition:opacity .2s, max-height .3s; overflow:hidden; }
     .work-section.hidden { opacity:0; max-height:0; margin:0; pointer-events:none; }
-    .work-section.visible { opacity:1; max-height:400px; }
+    .work-section.visible { opacity:1; max-height:600px; }
 
     .site-picker { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
     .site-pick-btn {
@@ -549,15 +549,14 @@
         <label>📍 출근 장소</label>
         <input type="text" id="modalLocation" placeholder="예: 서울 강남구 테헤란로 123" maxlength="40" />
       </div>
-    </div>
-
-    <div class="input-group">
-      <label>🍚 밥값 청구 (원)</label>
-      <input type="number" id="modalMeal" placeholder="오늘 밥값 청구액" min="0" step="500" />
-    </div>
-    <div class="input-group">
-      <label>🚌 차비 청구 (원)</label>
-      <input type="number" id="modalTransport" placeholder="오늘 차비 청구액" min="0" step="500" />
+      <div class="input-group">
+        <label>🍚 밥값 청구 (원)</label>
+        <input type="number" id="modalMeal" placeholder="오늘 밥값 청구액" min="0" step="500" />
+      </div>
+      <div class="input-group">
+        <label>🚌 차비 청구 (원)</label>
+        <input type="number" id="modalTransport" placeholder="오늘 차비 청구액" min="0" step="500" />
+      </div>
     </div>
 
     <div class="modal-btns">
@@ -1094,7 +1093,7 @@
       el.innerHTML = `
         <div class="site-summary-info">
           <div class="site-summary-name" style="color:${color}">${name}</div>
-          <div class="site-summary-detail">${v.days}일 출근 · 일당 ${v.income.toLocaleString()}원</div>
+          <div class="site-summary-detail">${v.days}일 출근 · 합계 ${v.income.toLocaleString()}원</div>
         </div>
         <div class="site-summary-amount" style="color:${color}">${v.income.toLocaleString()}원</div>`;
       listEl.appendChild(el);

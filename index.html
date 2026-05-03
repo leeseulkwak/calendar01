@@ -489,6 +489,10 @@
     </div>
 
     <div class="input-group">
+      <label>📍 출근 장소</label>
+      <input type="text" id="modalLocation" placeholder="예: 서울 강남구 테헤란로 123" maxlength="40" />
+    </div>
+    <div class="input-group">
       <label>🍚 밥값 청구 (원)</label>
       <input type="number" id="modalMeal" placeholder="오늘 밥값 청구액" min="0" step="500" />
     </div>
@@ -768,6 +772,14 @@
           cell.appendChild(w);
         }
 
+        if (dayData.location) {
+          const loc = document.createElement('div');
+          loc.className = 'day-expense';
+          loc.style.color = '#6b7280';
+          loc.textContent = '📍' + (dayData.location.length > 6 ? dayData.location.slice(0, 6) + '…' : dayData.location);
+          cell.appendChild(loc);
+        }
+
         const lines = [];
         if (dayData.meal)      lines.push(`🍚${dayData.meal.toLocaleString()}`);
         if (dayData.transport) lines.push(`🚌${dayData.transport.toLocaleString()}`);
@@ -835,6 +847,7 @@
     selectedSiteId = existing?.siteId || null;
 
     document.getElementById('modalTitle').textContent = `${currentYear}년 ${currentMonth+1}월 ${day}일`;
+    document.getElementById('modalLocation').value  = existing?.location  || '';
     document.getElementById('modalMeal').value      = existing?.meal      || '';
     document.getElementById('modalTransport').value = existing?.transport || '';
 
@@ -878,10 +891,11 @@
 
     const site      = selectedSiteId ? getSiteById(selectedSiteId) : null;
     const wage      = WORK_EMOJIS.has(selectedEmoji) ? (site?.wage || 0) : 0;
+    const location  = document.getElementById('modalLocation').value.trim();
     const meal      = parseInt(document.getElementById('modalMeal').value)      || 0;
     const transport = parseInt(document.getElementById('modalTransport').value) || 0;
 
-    saveDay(selectedDate, { emoji: selectedEmoji, siteId: selectedSiteId, wage, meal, transport });
+    saveDay(selectedDate, { emoji: selectedEmoji, siteId: selectedSiteId, wage, location, meal, transport });
     closeModal(); renderCalendar();
   });
 

@@ -95,7 +95,8 @@
     .empty-site { text-align:center; padding:14px 0; color:var(--text-sub); font-size:0.85rem; line-height:1.6; }
 
     /* ── 월 네비게이션 ── */
-    .month-nav { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:4px; margin-bottom:12px; }
+    .month-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+    .month-nav-center { display:flex; align-items:center; gap:8px; }
     .nav-btn {
       width:34px; height:34px; border-radius:50%;
       background:var(--primary-light); border:none;
@@ -143,7 +144,7 @@
       border-radius:50%; width:22px; height:22px;
       display:flex; align-items:center; justify-content:center;
     }
-    .day-cell.worked { background:#f0f3ff; border-color:#dde3ff; }
+    .day-cell.worked { background:#f4f5f8; border-color:#e0e2ea; }
     .day-cell.today.worked { background:var(--primary-light); border-color:var(--primary); }
 
     .day-site-strip { position:absolute; top:0; left:0; right:0; height:3px; border-radius:10px 10px 0 0; }
@@ -435,15 +436,13 @@
   <!-- 캘린더 -->
   <div class="card">
     <div class="month-nav">
-      <div style="display:flex;gap:6px;">
+      <button class="btn-today" id="btnToday">오늘</button>
+      <div class="month-nav-center">
         <button class="nav-btn" id="prevMonth">&#8592;</button>
+        <span class="month-title" id="monthTitle"></span>
         <button class="nav-btn" id="nextMonth">&#8594;</button>
       </div>
-      <span class="month-title" id="monthTitle"></span>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <span class="cal-month-stat" id="calMonthStat"></span>
-        <button class="btn-today" id="btnToday">오늘</button>
-      </div>
+      <span class="cal-month-stat" id="calMonthStat"></span>
     </div>
     <div class="calendar-grid" id="calendarGrid"></div>
   </div>
@@ -833,6 +832,10 @@
       if (dow === 6) cell.classList.add('saturday');
       if (isToday)  cell.classList.add('today');
       if (dayData)  cell.classList.add('worked');
+      if (dayData && site && WORK_EMOJIS.has(dayData.emoji) && !isToday) {
+        cell.style.background   = site.color + '1a';
+        cell.style.borderColor  = site.color + '66';
+      }
 
       if (site) {
         const strip = document.createElement('div');
@@ -866,6 +869,7 @@
         if (WORK_EMOJIS.has(dayData.emoji) && dayData.wage) {
           const w = document.createElement('div');
           w.className = 'day-wage';
+          if (site) w.style.color = site.color;
           w.textContent = `${(dayData.wage/10000).toLocaleString()}만`;
           cell.appendChild(w);
         }
